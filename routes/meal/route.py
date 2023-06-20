@@ -4,8 +4,6 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get('/')
+@router.get("/")
 async def index():
-    return {
-        'wa': 'sans'
-    }
+    return {"wa": "sans"}

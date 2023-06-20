@@ -1,14 +1,14 @@
 import logging
 
 levelTable = {
-    'CRITICAL': 50,
-    'FATAL': 50,
-    'ERROR': 40,
-    'WARNING': 30,
-    'WARN': 30,
-    'INFO': 20,
-    'DEBUG': 10,
-    'NOTSET': 0,
+    "CRITICAL": 50,
+    "FATAL": 50,
+    "ERROR": 40,
+    "WARNING": 30,
+    "WARN": 30,
+    "INFO": 20,
+    "DEBUG": 10,
+    "NOTSET": 0,
 }
 
 
@@ -26,9 +26,11 @@ def createLogger(name: str, level: int):
     logger = logging.getLogger(name=name)
     logger.setLevel(level=level)
 
-    formatter = logging.Formatter('%(asctime)s: %(name)s(%(levelname)s): %(message)s')
+    formatter = logging.Formatter("%(asctime)s: %(name)s(%(levelname)s): %(message)s")
 
-    fileHandler = logging.FileHandler(filename=f'logs/{name}.log', encoding='utf-8', mode='a')
+    fileHandler = logging.FileHandler(
+        filename=f"logs/{name}.log", encoding="utf-8", mode="a"
+    )
     fileHandler.setFormatter(formatter)
 
     streamHandler = logging.StreamHandler()
