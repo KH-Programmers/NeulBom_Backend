@@ -17,7 +17,6 @@ async def startup():
     logger = createLogger(
         name="NeulBom", level=levelTable[config["LOG SETTING"]["LEVEL"]]
     )
-    app.logger = logger
     for page in os.walk("routes"):
         if "__init__.py" not in page[2]:
             continue
