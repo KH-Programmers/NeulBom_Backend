@@ -1,5 +1,7 @@
 <h1 align="center">NeulBom Backend Project</h1>
-<img alt="" src="assets/logo.png" align="center" border="9999px" width="256">
+<p align="center">
+  <img alt="" src="assets/logo.png" style="width: 256px; height: 256px;" border="9999px">
+</p>
 <h3 align="center">This is Research version written by Leader. <a href="https://github.com/ZerOneDeveloper">ChanWoo Song</a> with <a href="https://fastapi.tiangolo.com/">FastAPI</a></h3>
 
 ## 1. Project Structure
