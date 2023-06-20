@@ -19,6 +19,6 @@ if __name__ == "__main__":
     uvicorn.run(
         host=config["SERVER SETTING"]["HOST"],
         port=int(config["SERVER SETTING"]["PORT"]),
-        app="main:app",
+        app="app:app",
         reload=(True if config["SERVER SETTING"]["PORT"] == "True" else False),
     )

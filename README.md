@@ -5,3 +5,13 @@
 ```
 ├── README.md
 ├── app.py
+├── config.ini
+├── requirements.txt
+```
+
+## 2. How to run
+```
+$ pip3 install -U -r requirements.txt
+$ python3 app.py
+```
+    
