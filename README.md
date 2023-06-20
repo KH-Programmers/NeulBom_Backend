@@ -8,6 +8,8 @@
 ```
 ├── README.md
 ├── app.py
+├── pages
+│   ├── __init__.py
 ├── config.ini
 ├── requirements.txt
 ```
