@@ -1,5 +1,5 @@
-<h1 style="text-align: center;">NeulBom Backend Project</h1>
-<h3 style="text-align: center;">This is Research version written by Leader. ChanWoo Song.</h3>
+<h1 align="center">NeulBom Backend Project</h1>
+<h3 align="center">This is Research version written by Leader. ChanWoo Song.</h3>
 
 
 ## 1. Project Structure
