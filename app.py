@@ -14,13 +14,15 @@ config.read(filenames="config.ini", encoding="utf-8")
 
 @app.on_event("startup")
 async def startup():
-    logger = createLogger(
-        name="NeulBom", level=levelTable[config["LOG"]["LEVEL"]]
-    )
+    try:
+        logger = createLogger(name="NeulBom", level=levelTable[config["LOG"]["LEVEL"]])
+    except FileNotFoundError:
+        os.mkdir("logs")
+        logger = createLogger(name="NeulBom", level=levelTable[config["LOG"]["LEVEL"]])
     for page in os.walk("routes"):
         if "__init__.py" not in page[2]:
             continue
-        path = page[0].replace("\\", ".")
+        path = page[0].replace("\\", ".").replace("/", ".")
         _route = importlib.import_module(f"{path}.route")
         app.include_router(
             _route.router,
