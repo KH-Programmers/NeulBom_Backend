@@ -21,11 +21,11 @@ class SignUpModel(BaseModel):
 
 
 async def turnstileVerify(token: str) -> bool:
-    response = await post(url='https://challenges.cloudflare.com/turnstile/v0/siteverify', body={
-        'secret': config['CLOUDFLARE']['TURNSTILE_SECRET'],
-        'response': token
-    })
-    return response['success']
+    response = await post(
+        url="https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        body={"secret": config["CLOUDFLARE"]["TURNSTILE_SECRET"], "response": token},
+    )
+    return response["success"]
 
 
 @router.post("/signup")

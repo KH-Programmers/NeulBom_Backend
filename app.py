@@ -26,7 +26,7 @@ async def startup():
         _route = importlib.import_module(f"{path}.route")
         app.include_router(
             _route.router,
-            prefix=f'/{path.replace("routes.", "".replace(".", "/"))}',
+            prefix=f'/{path.replace("routes.", "").replace(".", "/")}',
             tags=[path.replace("routes.", "")],
         )
         logger.info(f'Imported {path.split(".")[-1]} router.')
