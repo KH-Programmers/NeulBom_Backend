@@ -4,7 +4,9 @@ from fastapi.responses import JSONResponse
 
 import os
 import time
+import pytz
 import importlib
+from datetime import datetime, timedelta
 
 from utilities.config import getConfig
 from utilities.database.func import getDatabase
@@ -49,6 +51,24 @@ async def verifyToken(request: Request, call_next):
             is None
         ):
             return JSONResponse(status_code=401, content={"message": "Invalid token"})
+        else:
+            await database["token"].update_one(
+                {"token": request.headers["Authorization"].replace("Token ", "")},
+                {
+                    "$set": {
+                        "expired": int(
+                            time.mktime(
+                                (
+                                    datetime.now().replace(
+                                        tzinfo=pytz.timezone("Asia/Seoul")
+                                    )
+                                    + timedelta(days=7)
+                                ).timetuple()
+                            )
+                        )
+                    }
+                },
+            )
     response = await call_next(request)
     process_time = time.time() - start_time
     response.headers["X-Process-Time"] = str(process_time)
