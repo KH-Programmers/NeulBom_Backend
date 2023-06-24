@@ -97,8 +97,8 @@ async def login(userData: LoginModel):
             json.dumps(
                 {
                     "key": generateSalt(saltLength=64),
-                    "expired": int(
-                        time.mktime((datetime.now() + timedelta(days=7)).timetuple())
+                    "createdAt": int(
+                        time.mktime(datetime.now().timetuple())
                     ),
                 }
             ).encode("ascii")
@@ -109,6 +109,7 @@ async def login(userData: LoginModel):
         {
             "userId": findUser["_id"],
             "token": generatedToken,
+            'expiredAt': int(time.mktime((datetime.now() + timedelta(days=7)).timetuple()))
         }
     )
     return JSONResponse(
