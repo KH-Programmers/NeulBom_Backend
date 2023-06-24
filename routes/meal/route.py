@@ -7,7 +7,7 @@ from datetime import datetime
 router = APIRouter()
 
 
-def getMonthDates(
+def getMonthLastDate(
     today: datetime = datetime.today().replace(tzinfo=pytz.timezone("Asia/Seoul")),
 ):
     if today.month == 2:
@@ -20,4 +20,6 @@ def getMonthDates(
 
 @router.get("/")
 async def index():
+    monthData = getMonthLastDate()
+    print(monthData)
     return {"wa": "sans"}

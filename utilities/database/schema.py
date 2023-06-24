@@ -26,3 +26,7 @@ class User(BaseModel):
     hashKey: str = Field(...)
     isSuper: int = Field(...)
     lastLogin: int = Field(...)
+
+    class Config:
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
