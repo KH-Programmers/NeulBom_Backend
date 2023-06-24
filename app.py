@@ -38,14 +38,20 @@ async def startup():
         continue
 
 
-@app.middleware('http')
+@app.middleware("http")
 async def verifyToken(request: Request, call_next):
     start_time = time.time()
-    if await database['token'].find_one({'token': request.headers['Authorization'].replace('Token ', '')}) is None:
-        return JSONResponse(status_code=401, content={'message': 'Invalid token'})
+    if "Authorization" in request.headers:
+        if (
+            await database["token"].find_one(
+                {"token": request.headers["Authorization"].replace("Token ", "")}
+            )
+            is None
+        ):
+            return JSONResponse(status_code=401, content={"message": "Invalid token"})
     response = await call_next(request)
     process_time = time.time() - start_time
-    response.headers['X-Process-Time'] = str(process_time)
+    response.headers["X-Process-Time"] = str(process_time)
     return response
 
 

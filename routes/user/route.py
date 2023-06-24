@@ -45,8 +45,9 @@ async def turnstileVerify(token: str) -> bool:
 
 @router.post("/signup")
 async def signUp(userData: SignUpModel):
-    findUser = await database["user"].find_one({"email": userData.email})
-    if findUser:
+    if await database["user"].find_one({"email": userData.email}) or await database[
+        "user"
+    ].find_one({"nickname": userData.nickname}):
         return JSONResponse(
             status_code=406, content={"message": "Email already exists"}
         )
@@ -67,7 +68,7 @@ async def signUp(userData: SignUpModel):
                     .timetuple()
                 )
             ),
-            'schoolCode': userData.schoolCode
+            "schoolCode": userData.schoolCode,
         }
     )
     # if not await turnstileVerify(token=userData.token):
@@ -86,7 +87,7 @@ async def signUp(userData: SignUpModel):
 async def login(userData: LoginModel):
     findUser = await database["user"].find_one({"email": userData.email})
     if not findUser:
-        findUser = await database["user"].find_one({"username": userData.email})
+        findUser = await database["user"].find_one({"nickname": userData.email})
         if not findUser:
             return JSONResponse(status_code=406, content={"message": "User not found"})
     if (
