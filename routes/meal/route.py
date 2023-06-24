@@ -21,5 +21,6 @@ def getMonthLastDate(
 @router.get("/")
 async def index():
     monthData = getMonthLastDate()
+    print()
     print(monthData)
     return {"wa": "sans"}

@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 
 import time
 import json
+import pytz
 import base64
 import configparser
 from pydantic import Field, BaseModel
@@ -59,7 +60,13 @@ async def signUp(userData: SignUpModel):
             "password": hashedPassword,
             "salt": salt,
             "isSuper": False,
-            "lastLogin": int(time.mktime(datetime.now().timetuple())),
+            "lastLogin": int(
+                time.mktime(
+                    datetime.now()
+                    .replace(tzinfo=pytz.timezone("Asia/Seoul"))
+                    .timetuple()
+                )
+            ),
         }
     )
     # if not await turnstileVerify(token=userData.token):
@@ -90,14 +97,30 @@ async def login(userData: LoginModel):
     #     )
     await database["user"].update_one(
         {"email": userData.email},
-        {"$set": {"lastLogin": int(time.mktime(datetime.now().timetuple()))}},
+        {
+            "$set": {
+                "lastLogin": int(
+                    time.mktime(
+                        datetime.now()
+                        .replace(tzinfo=pytz.timezone("Asia/Seoul"))
+                        .timetuple()
+                    )
+                )
+            }
+        },
     )
     generatedToken = str(
         base64.b64encode(
             json.dumps(
                 {
                     "key": generateSalt(saltLength=64),
-                    "createdAt": int(time.mktime(datetime.now().timetuple())),
+                    "createdAt": int(
+                        time.mktime(
+                            datetime.now()
+                            .replace(tzinfo=pytz.timezone("Asia/Seoul"))
+                            .timetuple()
+                        )
+                    ),
                 }
             ).encode("ascii")
         ),
@@ -108,7 +131,12 @@ async def login(userData: LoginModel):
             "userId": findUser["_id"],
             "token": generatedToken,
             "expiredAt": int(
-                time.mktime((datetime.now() + timedelta(days=7)).timetuple())
+                time.mktime(
+                    (
+                        datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
+                        + timedelta(days=7)
+                    ).timetuple()
+                )
             ),
         }
     )
