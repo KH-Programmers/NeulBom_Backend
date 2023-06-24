@@ -25,4 +25,4 @@ class User(BaseModel):
     password: bytes = Field(...)
     hashKey: str = Field(...)
     isSuper: int = Field(...)
-    lastLogin: str = Field(...)
+    lastLogin: int = Field(...)

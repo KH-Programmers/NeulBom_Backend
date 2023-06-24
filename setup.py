@@ -1,8 +1,8 @@
+import subprocess
+
 try:
     __import__("pick")
 except ModuleNotFoundError:
-    import subprocess
-
     subprocess.call(["pip3", "install", "pick"])
 
 import os
@@ -29,6 +29,6 @@ router = APIRouter()
 
             """
             )
-        print('Successfully created module!')
+        print("Successfully created module!")
         time.sleep(5)
     break

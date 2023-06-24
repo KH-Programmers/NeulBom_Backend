@@ -26,3 +26,25 @@
 $ pip3 install -U -r requirements.txt
 $ python3 app.py
 ```
+
+
+## 3. Issues?
+- If your issue is the issue of the scrypt package, please follow.
+1. [Windows, Install OpenSSL Package](https://slproweb.com/products/Win32OpenSSL.html)
+2. MacOS, Install OpenSSL Package
+```
+$ brew install openssl
+$ export CFLAGS="-I$(brew --prefix openssl)/include $CFLAGS"
+$ export LDFLAGS="-L$(brew --prefix openssl)/lib $LDFLAGS"
+$ pip3 install scrypt
+```
+3. Debian and Ubuntu
+```
+$ sudo apt-get install build-essential libssl-dev python-dev
+$ pip3 install scrypt
+```
+4. Fedora and RHEL-derivatives
+```
+$ sudo yum install gcc openssl-devel python-devel
+$ pip3 install scrypt
+```
