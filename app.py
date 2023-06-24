@@ -4,12 +4,12 @@ import os
 import importlib
 import configparser
 
+from utilities.config import getConfig
 from utilities.logger import createLogger, levelTable
 
 app = FastAPI()
 
-config = configparser.ConfigParser()
-config.read(filenames="config.ini", encoding="utf-8")
+config = getConfig()
 
 
 @app.on_event("startup")

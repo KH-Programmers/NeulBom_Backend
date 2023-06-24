@@ -1,7 +1,6 @@
 import scrypt
 import random
 import string
-from typing import Tuple
 
 
 def generateSalt(saltLength: int = 64) -> str:

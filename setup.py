@@ -24,8 +24,12 @@ while True:
         with open(f'routes/{moduleName.replace(".", "/")}/route.py', "w") as f:
             f.write(
                 """from fastapi import APIRouter
+                
+from utilities.config import getConfig
 
 router = APIRouter()
+
+config = getConfig()
 
             """
             )

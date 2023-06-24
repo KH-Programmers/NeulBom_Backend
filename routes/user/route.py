@@ -5,16 +5,15 @@ import time
 import json
 import pytz
 import base64
-import configparser
 from pydantic import Field, BaseModel
 from datetime import datetime, timedelta
 
-from utilities.request import get, post
+from utilities.config import getConfig
+from utilities.request import post
 from utilities.database.func import getDatabase
 from utilities.security import hashPassword, generateSalt
 
-config = configparser.ConfigParser()
-config.read(filenames="config.ini", encoding="utf-8")
+config = getConfig()
 
 
 router = APIRouter()
@@ -27,6 +26,7 @@ class SignUpModel(BaseModel):
     nickname: str = Field(...)
     email: str = Field(...)
     password: str = Field(...)
+    schoolCode: str = Field(...)
 
 
 class LoginModel(BaseModel):
