@@ -7,7 +7,7 @@ def generateSalt(saltLength: int = 64) -> str:
     """
     Generates a random 32 bytes salt
 
-    :param saltLength: The length of the salt (optional)
+    :param saltLength: The length of the salt
     :return: The salt
     """
     return "".join(
