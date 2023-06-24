@@ -37,6 +37,8 @@ async def index():
             year=today.year, month=today.month, day=getMonthLastDate(today=today)
         ).weekday()
     )
-    mealData = await get(url=f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={config["APIS"]["NEIS_API_KEY"]}&Type=json&ATPT_OFCDC_SC_CODE=B10&SD_SCHUL_CODE=7010126&MLSV_FROM_YMD={monthFirstDate.strftime("%Y%m%d")}&MLSV_TO_YMD={monthLastDate.strftime("%Y%m%d")}')
+    mealData = await get(
+        url=f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={config["APIS"]["NEIS_API_KEY"]}&Type=json&ATPT_OFCDC_SC_CODE=B10&SD_SCHUL_CODE=7010126&MLSV_FROM_YMD={monthFirstDate.strftime("%Y%m%d")}&MLSV_TO_YMD={monthLastDate.strftime("%Y%m%d")}'
+    )
     print(mealData)
     return {"wa": "sans"}

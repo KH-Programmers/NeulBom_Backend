@@ -67,6 +67,7 @@ async def signUp(userData: SignUpModel):
                     .timetuple()
                 )
             ),
+            'schoolCode': userData.schoolCode
         }
     )
     # if not await turnstileVerify(token=userData.token):
@@ -85,7 +86,9 @@ async def signUp(userData: SignUpModel):
 async def login(userData: LoginModel):
     findUser = await database["user"].find_one({"email": userData.email})
     if not findUser:
-        return JSONResponse(status_code=406, content={"message": "User not found"})
+        findUser = await database["user"].find_one({"username": userData.email})
+        if not findUser:
+            return JSONResponse(status_code=406, content={"message": "User not found"})
     if (
         not hashPassword(password=userData.password, salt=findUser["salt"])
         == findUser["password"]
@@ -96,7 +99,7 @@ async def login(userData: LoginModel):
     #         status_code=406, content={"message": "Invalid token"}
     #     )
     await database["user"].update_one(
-        {"email": userData.email},
+        {"_id": findUser["_id"]},
         {
             "$set": {
                 "lastLogin": int(
