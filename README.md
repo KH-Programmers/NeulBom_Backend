@@ -8,9 +8,24 @@
 ```
 ├── README.md
 ├── app.py
-├── pages
-│   ├── __init__.py
+├── setup.py
+├── routes
+│   ├── meal
+│   │   ├── __init__.py
+│   │   ├── route.py
+│   ├── user
+│   │   ├── __init__.py
+│   │   ├── route.py
+├── utilities
+│   ├── config.py
+│   ├── logger.py
+│   ├── http.py
+│   ├── security.py
+│   ├── database
+│   │   ├── func.py
+│   │   ├── schema.py
 ├── config.ini
+├── config.example.ini
 ├── requirements.txt
 ```
 

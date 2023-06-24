@@ -11,10 +11,12 @@ from pick import pick
 
 while True:
     title = "Select Menu: "
-    options = ["1. Install Packages", "2. Generate Module"]
+    options = ["1. Install Packages", "2. Generate Module", "3. Exit"]
     option, index = pick(options, title)
     if index == 0:
         subprocess.call(["pip3", "install", "-U", "-r", "requirements.txt"])
+        print("Successfully installed packages!")
+        time.sleep(5)
     elif index == 1:
         moduleName = input("Module Name: ")
         if not os.path.isdir(os.path.isdir(f'routes/{moduleName.replace(".", "/")}')):
@@ -35,4 +37,5 @@ config = getConfig()
             )
         print("Successfully created module!")
         time.sleep(5)
-    break
+    else:
+        break
