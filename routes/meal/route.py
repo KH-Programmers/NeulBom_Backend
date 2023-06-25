@@ -4,6 +4,7 @@ import pytz
 from datetime import datetime, timedelta
 
 from utilities.request import get
+from utilities.mealObject import Meal
 from utilities.config import getConfig
 
 
@@ -38,7 +39,20 @@ async def index():
         ).weekday()
     )
     mealData = await get(
-        url=f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={config["APIS"]["NEIS_API_KEY"]}&Type=json&ATPT_OFCDC_SC_CODE=B10&SD_SCHUL_CODE=7010126&MLSV_FROM_YMD={monthFirstDate.strftime("%Y%m%d")}&MLSV_TO_YMD={monthLastDate.strftime("%Y%m%d")}'
+        url=f"https://open.neis.go.kr/hub/mealServiceDietInfo?"
+        f'KEY={config["APIS"]["NEIS_API_KEY"]}'
+        "&Type=json"
+        f"&ATPT_OFCDC_SC_CODE=B10"
+        f"&SD_SCHUL_CODE=7010126"
+        f'&MLSV_FROM_YMD={monthFirstDate.strftime("%Y%m%d")}'
+        f'&MLSV_TO_YMD={monthLastDate.strftime("%Y%m%d")}'
     )
-    print(mealData)
-    return {"wa": "sans"}
+    mealDataForMonth = {}
+    if mealData.get("mealServiceDietInfo"):
+        for meal in mealData["mealServiceDietInfo"][1]["row"]:
+            if not mealDataForMonth.get(meal["MLSV_YMD"]):
+                mealDataForMonth[meal["MLSV_YMD"]] = []
+            mealDataForMonth[meal["MLSV_YMD"]].append(meal["DDISH_NM"])
+    for meal in mealDataForMonth:
+        mealDataForMonth[meal] = Meal(mealData=mealDataForMonth[meal]).to_dict()
+    return mealDataForMonth
