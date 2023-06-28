@@ -9,7 +9,7 @@ from pydantic import Field, BaseModel
 from datetime import datetime, timedelta
 
 from utilities.config import getConfig
-from utilities.request import post
+from utilities.http import post
 from utilities.database.func import getDatabase
 from utilities.security import hashPassword, generateSalt
 

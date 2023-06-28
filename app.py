@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 
 from utilities.config import getConfig
 from utilities.database.func import getDatabase
-from utilities.http import createLogger, levelTable
+from utilities.logger import createLogger, levelTable
 
 app = FastAPI()
 

@@ -1,42 +1,20 @@
-import logging
-
-levelTable = {
-    "CRITICAL": 50,
-    "FATAL": 50,
-    "ERROR": 40,
-    "WARNING": 30,
-    "WARN": 30,
-    "INFO": 20,
-    "DEBUG": 10,
-    "NOTSET": 0,
-}
+import json
+from aiohttp import ClientSession
 
 
-def createLogger(name: str, level: int):
-    """
-    Func to create logger.
+async def get(url: str, params: dict = None, headers: dict = None) -> dict:
+    if headers is None:
+        headers = {}
+    headers["Content-Type"] = "application/json"
+    async with ClientSession() as session:
+        async with session.get(url=url, params=params, headers=headers) as response:
+            return json.loads(await response.text())
 
-    :type name: str
-    :type level: int
 
-    :param name: Name of logger
-    :param level: Level of logger
-    :return: logging.Logger
-    """
-    logger = logging.getLogger(name=name)
-    logger.setLevel(level=level)
-
-    formatter = logging.Formatter("%(asctime)s: %(name)s(%(levelname)s): %(message)s")
-
-    fileHandler = logging.FileHandler(
-        filename=f"logs/{name}.log", encoding="utf-8", mode="a"
-    )
-    fileHandler.setFormatter(formatter)
-
-    streamHandler = logging.StreamHandler()
-    streamHandler.setFormatter(formatter)
-
-    logger.addHandler(fileHandler)
-    logger.addHandler(streamHandler)
-
-    return logger
+async def post(url: str, body: dict = None, headers: dict = None) -> dict:
+    if headers is None:
+        headers = {}
+    headers["Content-Type"] = "application/json"
+    async with ClientSession() as session:
+        async with session.post(url=url, json=body, headers=headers) as response:
+            return json.loads(await response.text())

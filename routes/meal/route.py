@@ -3,7 +3,7 @@ from fastapi import APIRouter
 import pytz
 from datetime import datetime, timedelta
 
-from utilities.request import get
+from utilities.http import get
 from utilities.mealObject import Meal
 from utilities.config import getConfig
 
