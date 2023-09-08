@@ -1,8 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
 import time
-import json
 import pytz
 import base64
 from pydantic import Field, BaseModel
@@ -61,12 +60,8 @@ async def signUp(userData: SignUpModel):
             "password": hashedPassword,
             "salt": salt,
             "isSuper": False,
-            "lastLogin": int(
-                time.mktime(
-                    datetime.now()
-                    .replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                    .timetuple()
-                )
+            "lastLogin": datetime.now(tz=pytz.timezone("Asia/Seoul")).strftime(
+                "%Y-%m-%d %H:%M:%S"
             ),
             "schoolCode": userData.schoolCode,
         }
@@ -95,50 +90,39 @@ async def login(userData: LoginModel):
         == findUser["password"]
     ):
         return JSONResponse(status_code=406, content={"message": "Password incorrect"})
-    # if not await turnstileVerify(token=userData.token):
-    #     return JSONResponse(
-    #         status_code=406, content={"message": "Invalid token"}
-    #     )
+    # Captcha Verify
     await database["user"].update_one(
         {"_id": findUser["_id"]},
         {
             "$set": {
-                "lastLogin": int(
-                    time.mktime(
-                        datetime.now()
-                        .replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                        .timetuple()
-                    )
+                "lastLogin": datetime.now(tz=pytz.timezone("Asia/Seoul")).strftime(
+                    "%Y-%m-%d %H:%M:%S"
                 )
             }
         },
     )
-    generatedToken = str(
-        base64.b64encode(
-            json.dumps(
-                {
-                    "key": generateSalt(saltLength=64),
-                    "createdAt": int(
-                        time.mktime(
-                            datetime.now()
-                            .replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                            .timetuple()
-                        )
-                    ),
-                }
-            ).encode("ascii")
-        ),
-        "utf-8",
-    )
+    tokens = [
+        base64.b64encode(generateSalt(64).encode("ascii")).decode("ascii")
+        for _ in range(2)
+    ]
     await database["token"].insert_one(
         {
             "userId": findUser["_id"],
-            "token": generatedToken,
-            "expiredAt": int(
+            "accessToken": tokens[0],
+            "refreshToken": tokens[1],
+            "accessTokenExpiredAt": int(
                 time.mktime(
                     (
                         datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                        + timedelta(days=7)
+                        + timedelta(days=3)
+                    ).timetuple()
+                )
+            ),
+            "refreshTokenExpiredAt": int(
+                time.mktime(
+                    (
+                        datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
+                        + timedelta(days=14)
                     ).timetuple()
                 )
             ),
@@ -148,6 +132,21 @@ async def login(userData: LoginModel):
         status_code=200,
         content={
             "message": "Successfully logged in!",
-            "data": {"token": generatedToken},
+            "data": {"accessToken": tokens[0], "refreshToken": tokens[1]},
+        },
+    )
+
+
+@router.post("/logout")
+async def logout(request: Request):
+    token = request.headers.get("Authorization")
+    findToken = await database["token"].find_one({"accessToken": token})
+    if not findToken:
+        return JSONResponse(status_code=406, content={"message": "Token not found"})
+    await database["token"].delete_one({"_id": findToken["_id"]})
+    return JSONResponse(
+        status_code=200,
+        content={
+            "message": "Successfully logged out!",
         },
     )
