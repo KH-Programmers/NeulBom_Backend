@@ -2,7 +2,7 @@ import json
 from aiohttp import ClientSession
 
 
-async def get(url: str, params: dict = None, headers: dict = None) -> dict:
+async def Get(url: str, params: dict = None, headers: dict = None) -> dict:
     if headers is None:
         headers = {}
     headers["Content-Type"] = "application/json"
@@ -11,7 +11,7 @@ async def get(url: str, params: dict = None, headers: dict = None) -> dict:
             return json.loads(await response.text())
 
 
-async def post(url: str, body: dict = None, headers: dict = None) -> dict:
+async def Post(url: str, body: dict = None, headers: dict = None) -> dict:
     if headers is None:
         headers = {}
     headers["Content-Type"] = "application/json"

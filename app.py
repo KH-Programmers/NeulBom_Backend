@@ -8,24 +8,24 @@ import pytz
 import importlib
 from datetime import datetime, timedelta
 
-from utilities.config import getConfig
-from utilities.database.func import getDatabase
-from utilities.logger import createLogger, levelTable
+from utilities.config import GetConfig
+from utilities.database.func import GetDatabase
+from utilities.logger import CreateLogger, levelTable
 
 app = FastAPI()
 
-config = getConfig()
+config = GetConfig()
 
-database = getDatabase(config["DATABASE"]["URI"])
+database = GetDatabase(config["DATABASE"]["URI"])
 
 
 @app.on_event("startup")
 async def startup():
     try:
-        logger = createLogger(name="NeulBom", level=levelTable[config["LOG"]["LEVEL"]])
+        logger = CreateLogger(name="NeulBom", level=levelTable[config["LOG"]["LEVEL"]])
     except FileNotFoundError:
         os.mkdir("logs")
-        logger = createLogger(name="NeulBom", level=levelTable[config["LOG"]["LEVEL"]])
+        logger = CreateLogger(name="NeulBom", level=levelTable[config["LOG"]["LEVEL"]])
     for page in os.walk("routes"):
         if "__init__.py" not in page[2]:
             continue

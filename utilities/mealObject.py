@@ -51,7 +51,7 @@ class Meal:
                         )
                     )
 
-    def to_dict(self) -> list:
+    def ToDict(self) -> list:
         data = []
         for meal in self.menu:
             for menu in meal:

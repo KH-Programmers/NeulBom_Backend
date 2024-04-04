@@ -3,17 +3,17 @@ from fastapi import APIRouter
 import pytz
 from datetime import datetime, timedelta
 
-from utilities.http import get
+from utilities.http import Get
 from utilities.mealObject import Meal
-from utilities.config import getConfig
+from utilities.config import GetConfig
 
 
 router = APIRouter()
 
-config = getConfig()
+config = GetConfig()
 
 
-def getMonthLastDate(
+def GetMonthLastDate(
     today: datetime = datetime.today().replace(tzinfo=pytz.timezone("Asia/Seoul")),
 ):
     if today.month == 2:
@@ -25,20 +25,20 @@ def getMonthLastDate(
 
 
 @router.get("/")
-async def index():
+async def Index():
     today = datetime.today().replace(tzinfo=pytz.timezone("Asia/Seoul"))
     monthFirstDate = datetime(year=today.year, month=today.month, day=1) - timedelta(
         days=datetime(year=today.year, month=today.month, day=1).weekday() + 1
     )
     monthLastDate = datetime(
-        year=today.year, month=today.month, day=getMonthLastDate(today=today)
+        year=today.year, month=today.month, day=GetMonthLastDate(today=today)
     ) + timedelta(
         days=5
         - datetime(
-            year=today.year, month=today.month, day=getMonthLastDate(today=today)
+            year=today.year, month=today.month, day=GetMonthLastDate(today=today)
         ).weekday()
     )
-    mealData = await get(
+    mealData = await Get(
         url=f"https://open.neis.go.kr/hub/mealServiceDietInfo?"
         f'KEY={config["APIS"]["NEIS_API_KEY"]}'
         "&Type=json"
@@ -54,5 +54,5 @@ async def index():
                 mealDataForMonth[meal["MLSV_YMD"]] = []
             mealDataForMonth[meal["MLSV_YMD"]].append(meal["DDISH_NM"])
     for meal in mealDataForMonth:
-        mealDataForMonth[meal] = Meal(mealData=mealDataForMonth[meal]).to_dict()
+        mealDataForMonth[meal] = Meal(mealData=mealDataForMonth[meal]).ToDict()
     return mealDataForMonth

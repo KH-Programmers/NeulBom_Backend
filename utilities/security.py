@@ -3,7 +3,7 @@ import random
 import string
 
 
-def generateSalt(saltLength: int = 64) -> str:
+def GenerateSalt(saltLength: int = 64) -> str:
     """
     Generates a random 64 bytes salt
 
@@ -16,7 +16,7 @@ def generateSalt(saltLength: int = 64) -> str:
     )
 
 
-def hashPassword(password: str, salt: str) -> bytes:
+def HashPassword(password: str, salt: str) -> bytes:
     """
     Hashes a password with a salt
 

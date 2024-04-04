@@ -7,16 +7,16 @@ import base64
 from pydantic import Field, BaseModel
 from datetime import datetime, timedelta
 
-from utilities.config import getConfig
-from utilities.http import post
-from utilities.database.func import getDatabase
-from utilities.security import hashPassword, generateSalt
+from utilities.config import GetConfig
+from utilities.http import Post
+from utilities.database.func import GetDatabase
+from utilities.security import HashPassword, GenerateSalt
 
-config = getConfig()
+config = GetConfig()
 
 
 router = APIRouter()
-database = getDatabase(config["DATABASE"]["URI"])
+database = GetDatabase(config["DATABASE"]["URI"])
 
 
 class SignUpModel(BaseModel):
@@ -34,24 +34,24 @@ class LoginModel(BaseModel):
     password: str = Field(...)
 
 
-async def turnstileVerify(token: str) -> bool:
-    response = await post(
+async def TurnStileVerify(token: str) -> bool:
+    response = await Post(
         url="https://challenges.cloudflare.com/turnstile/v0/siteverify",
         body={"secret": config["CLOUDFLARE"]["TURNSTILE_SECRET"], "response": token},
     )
     return response["success"]
 
 
-@router.post("/signup")
-async def signUp(userData: SignUpModel):
+@router.Post("/signup")
+async def SignUp(userData: SignUpModel):
     if await database["user"].find_one({"email": userData.email}) or await database[
         "user"
     ].find_one({"nickname": userData.nickname}):
         return JSONResponse(
             status_code=406, content={"message": "Email already exists"}
         )
-    salt = generateSalt(saltLength=64)
-    hashedPassword = hashPassword(password=userData.password, salt=salt)
+    salt = GenerateSalt(saltLength=64)
+    hashedPassword = HashPassword(password=userData.password, salt=salt)
     await database["user"].insert_one(
         {
             "username": userData.username,
@@ -79,14 +79,14 @@ async def signUp(userData: SignUpModel):
 
 
 @router.get("/login")
-async def login(userData: LoginModel):
+async def LogIn(userData: LoginModel):
     findUser = await database["user"].find_one({"email": userData.email})
     if not findUser:
         findUser = await database["user"].find_one({"nickname": userData.email})
         if not findUser:
             return JSONResponse(status_code=406, content={"message": "User not found"})
     if (
-        not hashPassword(password=userData.password, salt=findUser["salt"])
+        not HashPassword(password=userData.password, salt=findUser["salt"])
         == findUser["password"]
     ):
         return JSONResponse(status_code=406, content={"message": "Password incorrect"})
@@ -102,7 +102,7 @@ async def login(userData: LoginModel):
         },
     )
     tokens = [
-        base64.b64encode(generateSalt(64).encode("ascii")).decode("ascii")
+        base64.b64encode(GenerateSalt(64).encode("ascii")).decode("ascii")
         for _ in range(2)
     ]
     await database["token"].insert_one(
@@ -137,7 +137,7 @@ async def login(userData: LoginModel):
     )
 
 
-@router.post("/logout")
+@router.Post("/logout")
 async def logout(request: Request):
     token = request.headers.get("Authorization")
     findToken = await database["token"].find_one({"accessToken": token})

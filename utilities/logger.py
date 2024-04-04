@@ -12,7 +12,7 @@ levelTable = {
 }
 
 
-def createLogger(name: str, level: int):
+def CreateLogger(name: str, level: int):
     """
     Func to create logger.
 
