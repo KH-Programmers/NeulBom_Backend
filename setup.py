@@ -31,7 +31,7 @@ from utilities.config import getConfig
 
 router = APIRouter()
 
-config = getConfig()
+config = GetConfig()
 
             """
             )
