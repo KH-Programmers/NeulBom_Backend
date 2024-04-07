@@ -1,0 +1,14 @@
+Django
+requests
+Pillow
+django-bootstrap4
+djangorestframework
+markdown
+django-filter
+django-rest-knox
+mysqlclient
+django-turnstile
+django-cors-headers
+django-rest-passwordreset
+django-mptt
+drf-extra-fields
