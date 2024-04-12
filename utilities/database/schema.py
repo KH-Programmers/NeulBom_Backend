@@ -31,3 +31,15 @@ class User(BaseModel):
     class Config:
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+
+
+class Token(BaseModel):
+    """토큰을 유저에 넣을까 말까 넣을까 말까"""
+
+    acessToken: str = Field(...)
+    refreshToken: str = Field(...)
+
+
+class LoginRequest(BaseModel):
+    username: str = Field(...)
+    password: str = Field(...)
