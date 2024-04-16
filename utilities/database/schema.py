@@ -34,8 +34,6 @@ class User(BaseModel):
 
 
 class Token(BaseModel):
-    """토큰을 유저에 넣을까 말까 넣을까 말까"""
-
     acessToken: str = Field(...)
     refreshToken: str = Field(...)
 
