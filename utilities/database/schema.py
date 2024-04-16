@@ -32,3 +32,13 @@ class User(BaseModel):
     class Config:
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+
+
+class Token(BaseModel):
+    acessToken: str = Field(...)
+    refreshToken: str = Field(...)
+
+
+class LoginRequest(BaseModel):
+    username: str = Field(...)
+    password: str = Field(...)

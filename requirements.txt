@@ -8,5 +8,7 @@ aiohttp
 scrypt
 pytz
 pick
+jose
+jwt
 python-barcode
 pillow
