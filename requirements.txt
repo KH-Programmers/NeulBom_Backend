@@ -10,3 +10,5 @@ pytz
 pick
 jose
 jwt
+python-barcode
+pillow

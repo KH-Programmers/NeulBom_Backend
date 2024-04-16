@@ -26,7 +26,8 @@ class User(BaseModel):
     hashKey: str = Field(...)
     isSuper: int = Field(...)
     lastLogin: int = Field(...)
-    schoolCode: str = Field(...)
+    studentCode: str = Field(...)
+    barcodeCode: str = Field(...)
 
     class Config:
         arbitrary_types_allowed = True
