@@ -24,18 +24,15 @@ def VerifyPassword(loginRequest: LoginRequest) -> Token:
     :return: acessToken, refreshToken
     """
 
-    user = database["users"].find_one(
+    user = database["User"].find_one(
         {"username": loginRequest.username}
     )  # db에서 username에 맞는 데이터 꺼내오기
 
-    if (
-        user is None
-        or HashPassword(LoginRequest.password)
-        != user[
-            "password"
-        ]  # username가 존재하지 않거나 password가 db와 일치하지 않는 지 확인
-    ):
+    # username가 존재하지 않거나 password가 db와 일치하지 않는 지 확인
+    if user is None or HashPassword(LoginRequest.password) != user["password"]:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    # TODO db에 token 넣기
 
     return Token(
         acessToken=GenerateAcessToken(userId=LoginRequest.username),
@@ -53,7 +50,9 @@ def GenerateAcessToken(userId: str) -> str:
 
     accessTokenExpire = datetime.now() + timedelta(minutes=5)
     accessToken = jwt.encode(
-        {"userId": userId, "exp": accessTokenExpire}, SECRET_KEY, algorithm=ALGORITHM
+        payload={"userId": userId, "exp": accessTokenExpire},
+        key=SECRET_KEY,
+        algorithm=ALGORITHM,
     )
     return accessToken
 
@@ -68,6 +67,11 @@ def GenerateRefreshToken(userId: str) -> str:
 
     refreshTokenExpire = datetime.now() + timedelta(days=8)
     refreshToken = jwt.encode(
-        {"userId": userId, "exp": refreshTokenExpire}, SECRET_KEY, algorithm=ALGORITHM
+        payload={"userId": userId, "exp": refreshTokenExpire},
+        key=SECRET_KEY,
+        algorithm=ALGORITHM,
     )
     return refreshToken
+
+
+# TODO 자동 로그인 기능
