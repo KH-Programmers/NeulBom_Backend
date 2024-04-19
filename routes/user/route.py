@@ -7,8 +7,8 @@ import base64
 from pydantic import Field, BaseModel
 from datetime import datetime, timedelta
 
-from utilities.config import GetConfig
 from utilities.http import Post
+from utilities.config import GetConfig
 from utilities.database.func import GetDatabase
 from utilities.security import HashPassword, GenerateSalt
 
@@ -25,7 +25,7 @@ class SignUpModel(BaseModel):
     nickname: str = Field(...)
     email: str = Field(...)
     password: str = Field(...)
-    schoolCode: str = Field(...)
+    studentCode: int = Field(...)
 
 
 class LoginModel(BaseModel):
@@ -34,15 +34,16 @@ class LoginModel(BaseModel):
     password: str = Field(...)
 
 
+# TODO
 async def TurnStileVerify(token: str) -> bool:
     response = await Post(
-        url="https://challenges.cloudflare.com/turnstile/v0/siteverify",
-        body={"secret": config["CLOUDFLARE"]["TURNSTILE_SECRET"], "response": token},
+        url="https://api.hcaptcha.com/siteverify",
+        body={"secret": config["CAPTCHA"]["HCAPTCHA_SECRET"], "response": token},
     )
     return response["success"]
 
 
-@router.Post("/signup")
+@router.post("/signup")
 async def SignUp(userData: SignUpModel):
     if await database["user"].find_one({"email": userData.email}) or await database[
         "user"
@@ -137,7 +138,7 @@ async def LogIn(userData: LoginModel):
     )
 
 
-@router.Post("/logout")
+@router.post("/logout")
 async def logout(request: Request):
     token = request.headers.get("Authorization")
     findToken = await database["token"].find_one({"accessToken": token})
