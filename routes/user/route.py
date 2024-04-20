@@ -34,64 +34,32 @@ class LoginModel(BaseModel):
     password: str = Field(...)
 
 
-# TODO
 async def CaptchaVerify(token: str) -> bool:
     response = await Post(
-        url="https://api.hcaptcha.com/siteverify",
-        body={"secret": config["CAPTCHA"]["HCAPTCHA_SECRET"], "response": token},
+        url="https://api.hcaptcha.com/siteverify"
+        f"?response={token}"
+        f"&secret={config['CAPTCHA']['HCAPTCHA_SECRET']}",
     )
     return response["success"]
 
 
-@router.post("/signup")
-async def SignUp(userData: SignUpModel):
-    if await database["user"].find_one({"email": userData.email}) or await database[
-        "user"
-    ].find_one({"nickname": userData.nickname}):
-        return JSONResponse(
-            status_code=406, content={"message": "Email already exists"}
-        )
-    salt = GenerateSalt(saltLength=64)
-    hashedPassword = HashPassword(password=userData.password, salt=salt)
-    await database["user"].insert_one(
-        {
-            "username": userData.username,
-            "nickname": userData.nickname,
-            "email": userData.email,
-            "password": hashedPassword,
-            "salt": salt,
-            "isSuper": False,
-            "lastLogin": datetime.now(tz=pytz.timezone("Asia/Seoul")).strftime(
-                "%Y-%m-%d %H:%M:%S"
-            ),
-            "schoolCode": userData.schoolCode,
-        }
-    )
-    # if not await turnstileVerify(token=userData.token):
-    #     return JSONResponse(
-    #         status_code=406, content={"message": "Invalid token"}
-    #     )
-    return JSONResponse(
-        status_code=201,
-        content={
-            "message": "Successfully created user!",
-        },
-    )
-
-
-@router.get("/login")
-async def LogIn(userData: LoginModel):
-    findUser = await database["user"].find_one({"email": userData.email})
+@router.post("/login")
+async def LogIn(request: Request):
+    userData = await request.json()
+    findUser = await database["user"].find_one(
+        {"email": userData["userId"]}
+    ) or await database["user"].find_one({"userId": userData["userId"]})
     if not findUser:
-        findUser = await database["user"].find_one({"nickname": userData.email})
-        if not findUser:
-            return JSONResponse(status_code=406, content={"message": "User not found"})
+        return JSONResponse(status_code=400, content={"message": "Invalid username"})
     if (
-        not HashPassword(password=userData.password, salt=findUser["salt"])
+        not HashPassword(password=userData["password"], salt=findUser["salt"])
         == findUser["password"]
     ):
-        return JSONResponse(status_code=406, content={"message": "Password incorrect"})
-    # Captcha Verify
+        return JSONResponse(status_code=400, content={"message": "Invalid password"})
+    if not await CaptchaVerify(token=userData["token"]):
+        return JSONResponse(
+            status_code=406, content={"message": "Invalid captcha token"}
+        )
     await database["user"].update_one(
         {"_id": findUser["_id"]},
         {
@@ -115,7 +83,7 @@ async def LogIn(userData: LoginModel):
                 time.mktime(
                     (
                         datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                        + timedelta(days=3)
+                        + timedelta(minutes=5)
                     ).timetuple()
                 )
             ),
@@ -123,7 +91,7 @@ async def LogIn(userData: LoginModel):
                 time.mktime(
                     (
                         datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                        + timedelta(days=14)
+                        + timedelta(days=8)
                     ).timetuple()
                 )
             ),
@@ -134,6 +102,39 @@ async def LogIn(userData: LoginModel):
         content={
             "message": "Successfully logged in!",
             "data": {"accessToken": tokens[0], "refreshToken": tokens[1]},
+        },
+    )
+
+
+@router.post("/signup")
+async def SignUp(request: Request):
+    userData = await request.json()
+    if await database["user"].find_one({"email": userData["email"]}) or await database[
+        "user"
+    ].find_one({"username": userData["username"]}):
+        return JSONResponse(status_code=409, content={"message": "User already exists"})
+    salt = GenerateSalt(saltLength=64)
+    hashedPassword = HashPassword(password=userData["password"], salt=salt)
+    if not await CaptchaVerify(token=userData["token"]):
+        return JSONResponse(status_code=406, content={"message": "Invalid token"})
+    await database["user"].insert_one(
+        {
+            "userId": userData["userId"],
+            "username": userData["username"],
+            "email": userData["email"],
+            "studentId": userData["studentId"],
+            "password": hashedPassword,
+            "salt": salt,
+            "isSuper": False,
+            "lastLogin": datetime.now(tz=pytz.timezone("Asia/Seoul")).strftime(
+                "%Y-%m-%d %H:%M:%S"
+            ),
+        }
+    )
+    return JSONResponse(
+        status_code=201,
+        content={
+            "message": "Successfully created user!",
         },
     )
 

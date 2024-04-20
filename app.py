@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 import os
 import time
@@ -13,6 +14,17 @@ from utilities.database.func import GetDatabase
 from utilities.logger import CreateLogger, levelTable
 
 app = FastAPI()
+app.add_middleware(
+    middleware_class=CORSMiddleware,
+    allow_origins=[
+        "http://localhost",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 config = GetConfig()
 
@@ -87,5 +99,5 @@ if __name__ == "__main__":
         host=config["SERVER"]["HOST"],
         port=int(config["SERVER"]["PORT"]),
         app="app:app",
-        reload=(True if config["SERVER"]["DEBUG"] == "True" else False),
+        reload=(True if config["SERVER"]["DEBUG"].lower() == "true" else False),
     )
