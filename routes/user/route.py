@@ -35,7 +35,7 @@ class LoginModel(BaseModel):
 
 
 # TODO
-async def TurnStileVerify(token: str) -> bool:
+async def CaptchaVerify(token: str) -> bool:
     response = await Post(
         url="https://api.hcaptcha.com/siteverify",
         body={"secret": config["CAPTCHA"]["HCAPTCHA_SECRET"], "response": token},
