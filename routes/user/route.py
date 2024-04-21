@@ -129,6 +129,7 @@ async def SignUp(request: Request):
             "lastLogin": datetime.now(tz=pytz.timezone("Asia/Seoul")).strftime(
                 "%Y-%m-%d %H:%M:%S"
             ),
+            "graduated": False,
         }
     )
     return JSONResponse(
