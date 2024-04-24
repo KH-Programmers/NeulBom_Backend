@@ -46,7 +46,9 @@ async def LogIn(request: Request) -> Response:
         {"email": userData["userId"]}
     ) or await database["user"].find_one({"userId": userData["userId"]})
     if not findUser:
-        return JSONResponse(status_code=400, content={"message": "Invalid username", "data": {}})
+        return JSONResponse(
+            status_code=400, content={"message": "Invalid username", "data": {}}
+        )
     if (
         not HashPassword(password=userData["password"], salt=findUser["salt"])
         == findUser["password"]
@@ -164,18 +166,17 @@ async def logout(request: Request) -> Response:
     token = request.headers.get("Authorization")
     findToken = await database["token"].find_one({"accessToken": token})
     if not findToken:
-        return JSONResponse(status_code=406, content={"message": "Token not found", "data": {}})
+        return JSONResponse(
+            status_code=406, content={"message": "Token not found", "data": {}}
+        )
     await database["token"].delete_one({"_id": findToken["_id"]})
     return JSONResponse(
         status_code=200,
-        content={
-            "message": "Successfully logged out!",
-            "data": {}
-        },
+        content={"message": "Successfully logged out!", "data": {}},
     )
 
 
-@router.get('/authentication')
+@router.get("/authentication")
 async def Authentication(request: Request) -> Response:
     """
     It's a route checking the validity of token
@@ -186,28 +187,27 @@ async def Authentication(request: Request) -> Response:
     - message: The message
     - data: The data ( include validity of token through status code 200, 401, 406)
     """
-    token = request.headers.get("Authorization")
+    token = request.headers.get("Authorization").replace("Token ", "")
     findToken = await database["token"].find_one({"accessToken": token})
     if not findToken:
-        return JSONResponse(status_code=401, content={"message": "Token not found", "data": {}})
+        return JSONResponse(
+            status_code=401, content={"message": "Token not found", "data": {}}
+        )
     if findToken["accessTokenExpiredAt"] < int(
         time.mktime(
-            (
-                datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
-            ).timetuple()
+            (datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))).timetuple()
         )
     ):
-        return JSONResponse(status_code=406, content={"message": "Token expired", "data": {}})
+        return JSONResponse(
+            status_code=406, content={"message": "Token expired", "data": {}}
+        )
     return JSONResponse(
         status_code=200,
-        content={
-            "message": "Token valid",
-            "data": {}
-        },
+        content={"message": "Token valid", "data": {}},
     )
 
 
-@router.post('/refresh')
+@router.post("/refresh")
 async def Refresh(request: Request) -> Response:
     """
     It's a route refreshing the token
@@ -218,18 +218,20 @@ async def Refresh(request: Request) -> Response:
     - message: The message
     - data: The data ( include accessToken, refreshToken )
     """
-    token = request.headers.get("Authorization")
+    token = request.headers.get("Authorization").replace("Token ", "")
     findToken = await database["token"].find_one({"refreshToken": token})
     if not findToken:
-        return JSONResponse(status_code=401, content={"message": "Token not found", "data": {}})
+        return JSONResponse(
+            status_code=401, content={"message": "Token not found", "data": {}}
+        )
     if findToken["refreshTokenExpiredAt"] < int(
         time.mktime(
-            (
-                datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
-            ).timetuple()
+            (datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))).timetuple()
         )
     ):
-        return JSONResponse(status_code=406, content={"message": "Token expired", "data": {}})
+        return JSONResponse(
+            status_code=406, content={"message": "Token expired", "data": {}}
+        )
     tokens = [
         base64.b64encode(GenerateSalt(64).encode("ascii")).decode("ascii")
         for _ in range(2)

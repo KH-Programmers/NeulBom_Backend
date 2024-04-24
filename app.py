@@ -20,7 +20,7 @@ app.add_middleware(
         "http://localhost",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://neulbom.wiki"
+        "https://neulbom.wiki",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -54,34 +54,8 @@ async def startup():
 
 
 @app.middleware("http")
-async def verifyToken(request: Request, call_next):
+async def middleware(request: Request, call_next):
     start_time = time.time()
-    if "Authorization" in request.headers:
-        if (
-            await database["token"].find_one(
-                {"token": request.headers["Authorization"].replace("Token ", "")}
-            )
-            is None
-        ):
-            return JSONResponse(status_code=401, content={"message": "Invalid token"})
-        else:
-            await database["token"].update_one(
-                {"token": request.headers["Authorization"].replace("Token ", "")},
-                {
-                    "$set": {
-                        "expired": int(
-                            time.mktime(
-                                (
-                                    datetime.now().replace(
-                                        tzinfo=pytz.timezone("Asia/Seoul")
-                                    )
-                                    + timedelta(days=7)
-                                ).timetuple()
-                            )
-                        )
-                    }
-                },
-            )
     response = await call_next(request)
     process_time = time.time() - start_time
     response.headers["X-Process-Time"] = str(process_time)
