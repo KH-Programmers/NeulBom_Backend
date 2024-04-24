@@ -229,6 +229,7 @@ async def Refresh(request: Request) -> Response:
             (datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))).timetuple()
         )
     ):
+        await database["token"].delete_one({"_id": findToken["_id"]})
         return JSONResponse(
             status_code=406, content={"message": "Token expired", "data": {}}
         )

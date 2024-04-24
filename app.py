@@ -53,19 +53,6 @@ async def ReadyToStart():
         continue
 
 
-@app.on_event("startup")
-async def ValidateToken():
-    while True:
-        now = int(time.mktime(datetime.now().timetuple()))
-        async for token in database["token"].find({}):
-            if (
-                token["accessTokenExpiredAt"] < now
-                and token["refreshTokenExpiredAt"] < now
-            ):
-                await database["token"].delete_one({"_id": token["_id"]})
-        await asyncio.sleep(60)
-
-
 @app.middleware("http")
 async def middleware(request: Request, call_next):
     start_time = time.time()
