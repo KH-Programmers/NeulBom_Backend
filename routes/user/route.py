@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Response
 from fastapi.responses import JSONResponse
 
 import time
@@ -19,21 +19,6 @@ router = APIRouter()
 database = GetDatabase(config["DATABASE"]["URI"])
 
 
-class SignUpModel(BaseModel):
-    token: str = Field(...)
-    username: str = Field(...)
-    nickname: str = Field(...)
-    email: str = Field(...)
-    password: str = Field(...)
-    studentCode: int = Field(...)
-
-
-class LoginModel(BaseModel):
-    token: str = Field(...)
-    email: str = Field(...)
-    password: str = Field(...)
-
-
 async def CaptchaVerify(token: str) -> bool:
     response = await Post(
         url="https://api.hcaptcha.com/siteverify"
@@ -44,13 +29,13 @@ async def CaptchaVerify(token: str) -> bool:
 
 
 @router.post("/login")
-async def LogIn(request: Request):
+async def LogIn(request: Request) -> Response:
     userData = await request.json()
     findUser = await database["user"].find_one(
         {"email": userData["userId"]}
     ) or await database["user"].find_one({"userId": userData["userId"]})
     if not findUser:
-        return JSONResponse(status_code=400, content={"message": "Invalid username"})
+        return JSONResponse(status_code=400, content={"message": "Invalid username", "data": {}})
     if (
         not HashPassword(password=userData["password"], salt=findUser["salt"])
         == findUser["password"]
@@ -107,7 +92,7 @@ async def LogIn(request: Request):
 
 
 @router.post("/signup")
-async def SignUp(request: Request):
+async def SignUp(request: Request) -> Response:
     userData = await request.json()
     if await database["user"].find_one({"email": userData["email"]}) or await database[
         "user"
@@ -141,7 +126,7 @@ async def SignUp(request: Request):
 
 
 @router.post("/logout")
-async def logout(request: Request):
+async def logout(request: Request) -> Response:
     token = request.headers.get("Authorization")
     findToken = await database["token"].find_one({"accessToken": token})
     if not findToken:
@@ -151,5 +136,28 @@ async def logout(request: Request):
         status_code=200,
         content={
             "message": "Successfully logged out!",
+        },
+    )
+
+
+@router.get('/authentication')
+async def Authentication(request: Request) -> Response:
+    token = request.headers.get("Authorization")
+    findToken = await database["token"].find_one({"accessToken": token})
+    if not findToken:
+        return JSONResponse(status_code=401, content={"message": "Token not found", "data": {}})
+    if findToken["accessTokenExpiredAt"] < int(
+        time.mktime(
+            (
+                datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
+            ).timetuple()
+        )
+    ):
+        return JSONResponse(status_code=406, content={"message": "Token expired", "data": {}})
+    return JSONResponse(
+        status_code=200,
+        content={
+            "message": "Token valid",
+            "data": {}
         },
     )
