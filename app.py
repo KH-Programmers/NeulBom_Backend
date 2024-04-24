@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 from fastapi.requests import Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 import os
 import time
 import pytz
+import asyncio
 import importlib
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from utilities.config import GetConfig
 from utilities.database.func import GetDatabase
@@ -33,7 +33,7 @@ database = GetDatabase(config["DATABASE"]["URI"])
 
 
 @app.on_event("startup")
-async def startup():
+async def ReadyToStart():
     try:
         logger = CreateLogger(name="NeulBom", level=levelTable[config["LOG"]["LEVEL"]])
     except FileNotFoundError:
@@ -51,6 +51,19 @@ async def startup():
         )
         logger.info(f'Imported {path.split(".")[-1]} router.')
         continue
+
+
+@app.on_event("startup")
+async def ValidateToken():
+    while True:
+        now = int(time.mktime(datetime.now().timetuple()))
+        async for token in database["token"].find({}):
+            if (
+                token["accessTokenExpiredAt"] < now
+                and token["refreshTokenExpiredAt"] < now
+            ):
+                await database["token"].delete_one({"_id": token["_id"]})
+        await asyncio.sleep(60)
 
 
 @app.middleware("http")

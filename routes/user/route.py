@@ -153,7 +153,7 @@ async def SignUp(request: Request) -> Response:
 
 
 @router.post("/logout")
-async def logout(request: Request) -> Response:
+async def LogOut(request: Request) -> Response:
     """
     It's a logout route
     Parameters:
