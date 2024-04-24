@@ -30,6 +30,17 @@ async def CaptchaVerify(token: str) -> bool:
 
 @router.post("/login")
 async def LogIn(request: Request) -> Response:
+    """
+    It's a login route
+    Parameters:
+    - userId: The user's email or username
+    - password: The user's password
+    - token: The captcha(hCaptcha) token
+
+    Returns:
+    - message: The message
+    - data: The data
+    """
     userData = await request.json()
     findUser = await database["user"].find_one(
         {"email": userData["userId"]}
@@ -93,6 +104,20 @@ async def LogIn(request: Request) -> Response:
 
 @router.post("/signup")
 async def SignUp(request: Request) -> Response:
+    """
+    It's a sign up route
+    Parameters:
+    - userId: The user's id
+    - username: The user's name
+    - email: The user's email
+    - studentId: The user's student number
+    - password: The user's password
+    - token: The captcha(hCaptcha) token
+
+    Returns:
+    - message: The message
+    - data: The data
+    """
     userData = await request.json()
     if await database["user"].find_one({"email": userData["email"]}) or await database[
         "user"
@@ -127,21 +152,40 @@ async def SignUp(request: Request) -> Response:
 
 @router.post("/logout")
 async def logout(request: Request) -> Response:
+    """
+    It's a logout route
+    Parameters:
+    - Access Token ( in header )
+
+    Returns:
+    - message: The message
+    - data: The data ( logout message )
+    """
     token = request.headers.get("Authorization")
     findToken = await database["token"].find_one({"accessToken": token})
     if not findToken:
-        return JSONResponse(status_code=406, content={"message": "Token not found"})
+        return JSONResponse(status_code=406, content={"message": "Token not found", "data": {}})
     await database["token"].delete_one({"_id": findToken["_id"]})
     return JSONResponse(
         status_code=200,
         content={
             "message": "Successfully logged out!",
+            "data": {}
         },
     )
 
 
 @router.get('/authentication')
 async def Authentication(request: Request) -> Response:
+    """
+    It's a route checking the validity of token
+    Parameters:
+    - Access Token ( in header )
+
+    Returns:
+    - message: The message
+    - data: The data ( include validity of token through status code 200, 401, 406)
+    """
     token = request.headers.get("Authorization")
     findToken = await database["token"].find_one({"accessToken": token})
     if not findToken:
@@ -159,5 +203,66 @@ async def Authentication(request: Request) -> Response:
         content={
             "message": "Token valid",
             "data": {}
+        },
+    )
+
+
+@router.post('/refresh')
+async def Refresh(request: Request) -> Response:
+    """
+    It's a route refreshing the token
+    Parameters:
+    - Refresh Token ( in header )
+
+    Returns:
+    - message: The message
+    - data: The data ( include accessToken, refreshToken )
+    """
+    token = request.headers.get("Authorization")
+    findToken = await database["token"].find_one({"refreshToken": token})
+    if not findToken:
+        return JSONResponse(status_code=401, content={"message": "Token not found", "data": {}})
+    if findToken["refreshTokenExpiredAt"] < int(
+        time.mktime(
+            (
+                datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
+            ).timetuple()
+        )
+    ):
+        return JSONResponse(status_code=406, content={"message": "Token expired", "data": {}})
+    tokens = [
+        base64.b64encode(GenerateSalt(64).encode("ascii")).decode("ascii")
+        for _ in range(2)
+    ]
+    await database["token"].update_one(
+        {"_id": findToken["_id"]},
+        {
+            "$set": {
+                "accessToken": tokens[0],
+                "refreshToken": tokens[1],
+                "accessTokenExpiredAt": int(
+                    time.mktime(
+                        (
+                            datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
+                            + timedelta(minutes=5)
+                        ).timetuple()
+                    )
+                ),
+                "refreshTokenExpiredAt": int(
+                    time.mktime(
+                        (
+                            datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
+                            + timedelta(days=8)
+                        ).timetuple()
+                    )
+                ),
+            }
+        },
+    )
+    return JSONResponse(
+        status_code=200,
+        content={
+            "message": "Token refreshed!",
+            "data": {"accessToken": tokens[0], "refreshToken": tokens[1]},
         },
     )
