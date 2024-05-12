@@ -4,7 +4,6 @@ from fastapi.responses import JSONResponse
 import time
 import pytz
 import base64
-from pydantic import Field, BaseModel
 from datetime import datetime, timedelta
 
 from utilities.http import Post
@@ -208,7 +207,7 @@ async def Authentication(request: Request) -> Response:
 
 
 @router.post("/refresh")
-async def Refresh(request: Request) -> Response:
+async def RefreshToken(request: Request) -> Response:
     """
     It's a route refreshing the token
     Parameters:
@@ -269,3 +268,31 @@ async def Refresh(request: Request) -> Response:
             "data": {"accessToken": tokens[0], "refreshToken": tokens[1]},
         },
     )
+
+
+@router.get("/generateBarcode")
+async def GenerateBarcode(request: Request) -> Response:
+    """
+    It's a route generating the barcode
+    Parameters:
+    - Access Token ( in header )
+
+    Returns:
+    - message: The message
+    - data: The data ( include barcode )
+    """
+    token = request.headers.get("Authorization").replace("Token ", "")
+    findToken = await database["token"].find_one({"accessToken": token})
+    if not findToken:
+        return JSONResponse(
+            status_code=401, content={"message": "Token not found", "data": {}}
+        )
+    if findToken["accessTokenExpiredAt"] < int(
+        time.mktime(
+            (datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))).timetuple()
+        )
+    ):
+        return JSONResponse(
+            status_code=406, content={"message": "Token expired", "data": {}}
+        )
+    user = await database["user"].find_one({"_id": findToken["userId"]})
