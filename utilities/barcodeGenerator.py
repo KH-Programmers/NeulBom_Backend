@@ -1,10 +1,9 @@
-from io import StringIO
 from barcode import Code39
 from barcode.writer import SVGWriter
 import barcode
 
 
-def GenerateBarcode(stringInput):
+async def GenerateBarcode(stringInput):
     """
     Parameters : stringInput
     return : anImage - File-like SVG image Object
@@ -16,4 +15,6 @@ def GenerateBarcode(stringInput):
     barcode.base.Barcode.default_writer_options["background"] = "transparent"
 
     anImage = Code39(stringInput, add_checksum=False)
+    anImage = anImage.build()
+    anImage = anImage.render()
     return anImage
