@@ -15,6 +15,5 @@ async def GenerateBarcode(stringInput):
     barcode.base.Barcode.default_writer_options["background"] = "transparent"
 
     anImage = Code39(stringInput, add_checksum=False)
-    anImage = anImage.build()
     anImage = anImage.render()
     return anImage
