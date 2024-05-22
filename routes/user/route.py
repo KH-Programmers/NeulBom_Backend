@@ -281,18 +281,19 @@ async def GenerateBarcode(request: Request) -> Response:
     - message: The message
     - data: The data ( include barcode )
     """
-    token = request.headers.get("Authorization").replace("Token ", "")
-    findToken = await database["token"].find_one({"accessToken": token})
-    if not findToken:
-        return JSONResponse(
-            status_code=401, content={"message": "Token not found", "data": {}}
-        )
-    if findToken["accessTokenExpiredAt"] < int(
-        time.mktime(
-            (datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))).timetuple()
-        )
-    ):
-        return JSONResponse(
-            status_code=406, content={"message": "Token expired", "data": {}}
-        )
-    user = await database["user"].find_one({"_id": findToken["userId"]})
+    # token = request.headers.get("Authorization").replace("Token ", "")
+    # findToken = await database["token"].find_one({"accessToken": token})
+    # if not findToken:
+    #     return JSONResponse(
+    #         status_code=401, content={"message": "Token not found", "data": {}}
+    #     )
+    # if findToken["accessTokenExpiredAt"] < int(
+    #     time.mktime(
+    #         (datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))).timetuple()
+    #     )
+    # ):
+    #     return JSONResponse(
+    #         status_code=406, content={"message": "Token expired", "data": {}}
+    #     )
+    # user = await database["user"].find_one({"_id": findToken["userId"]})
+    return await GenerateBarcode("BC2299999")
