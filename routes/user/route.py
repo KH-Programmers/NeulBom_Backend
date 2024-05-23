@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from utilities.http import Post
 from utilities.config import GetConfig
 from utilities.database.func import GetDatabase
+from utilities.barcodeGenerator import GenerateBarcode
 from utilities.security import HashPassword, GenerateSalt
 
 config = GetConfig()
@@ -270,10 +271,10 @@ async def RefreshToken(request: Request) -> Response:
     )
 
 
-@router.get("/generateBarcode")
-async def GenerateBarcode(request: Request) -> Response:
+@router.get("/")
+async def GenerateUserInformation(request: Request) -> Response:
     """
-    It's a route generating the barcode
+    It's a route generating the user information(name, studentId, barcode)
     Parameters:
     - Access Token ( in header )
 
@@ -281,19 +282,32 @@ async def GenerateBarcode(request: Request) -> Response:
     - message: The message
     - data: The data ( include barcode )
     """
-    # token = request.headers.get("Authorization").replace("Token ", "")
-    # findToken = await database["token"].find_one({"accessToken": token})
-    # if not findToken:
-    #     return JSONResponse(
-    #         status_code=401, content={"message": "Token not found", "data": {}}
-    #     )
-    # if findToken["accessTokenExpiredAt"] < int(
-    #     time.mktime(
-    #         (datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))).timetuple()
-    #     )
-    # ):
-    #     return JSONResponse(
-    #         status_code=406, content={"message": "Token expired", "data": {}}
-    #     )
-    # user = await database["user"].find_one({"_id": findToken["userId"]})
-    return await GenerateBarcode("BC2299999")
+    if (request.headers.get("Authorization") is None) or (
+        request.headers.get("Authorization") == ""
+    ):
+        return JSONResponse(
+            status_code=400,
+            content={"message": "Token not found", "data": {}}
+        )
+    token = request.headers.get("Authorization").replace("Token ", "")
+    findToken = await database["token"].find_one({"accessToken": token})
+    if not findToken:
+        return JSONResponse(
+            status_code=401, content={"message": "Token not found", "data": {}}
+        )
+    if findToken["accessTokenExpiredAt"] < int(
+        time.mktime(
+            (datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))).timetuple()
+        )
+    ):
+        return JSONResponse(
+            status_code=406, content={"message": "Token expired", "data": {}}
+        )
+    user = await database["user"].find_one({"_id": findToken["userId"]})
+    return JSONResponse({
+        "message": "Successfully generated user information",
+        "data": {
+            "name": user["username"],
+            "studentId": user["studentId"],
+        }
+    })
