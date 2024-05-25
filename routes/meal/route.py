@@ -1,16 +1,17 @@
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
 import pytz
 from datetime import datetime, timedelta
 
-from utilities.http import Get
-from utilities.mealObject import Meal
 from utilities.config import GetConfig
+from utilities.database.func import GetDatabase
 
 
 router = APIRouter()
 
 config = GetConfig()
+database = GetDatabase(config["DATABASE"]["URI"])
 
 
 def GetMonthLastDate(
@@ -26,33 +27,17 @@ def GetMonthLastDate(
 
 @router.get("/")
 async def Index():
-    today = datetime.today().replace(tzinfo=pytz.timezone("Asia/Seoul"))
-    monthFirstDate = datetime(year=today.year, month=today.month, day=1) - timedelta(
-        days=datetime(year=today.year, month=today.month, day=1).weekday() + 1
-    )
-    monthLastDate = datetime(
-        year=today.year, month=today.month, day=GetMonthLastDate(today=today)
-    ) + timedelta(
-        days=5
-        - datetime(
-            year=today.year, month=today.month, day=GetMonthLastDate(today=today)
-        ).weekday()
-    )
-    mealData = await Get(
-        url=f"https://open.neis.go.kr/hub/mealServiceDietInfo?"
-        f'KEY={config["APIS"]["NEIS_API_KEY"]}'
-        "&Type=json"
-        f"&ATPT_OFCDC_SC_CODE=B10"
-        f"&SD_SCHUL_CODE=7010126"
-        f'&MLSV_FROM_YMD={monthFirstDate.strftime("%Y%m%d")}'
-        f'&MLSV_TO_YMD={monthLastDate.strftime("%Y%m%d")}'
-    )
-    mealDataForMonth = {}
-    if mealData.get("mealServiceDietInfo"):
-        for meal in mealData["mealServiceDietInfo"][1]["row"]:
-            if not mealDataForMonth.get(meal["MLSV_YMD"]):
-                mealDataForMonth[meal["MLSV_YMD"]] = []
-            mealDataForMonth[meal["MLSV_YMD"]].append(meal["DDISH_NM"])
-    for meal in mealDataForMonth:
-        mealDataForMonth[meal] = Meal(mealData=mealDataForMonth[meal]).ToDict()
-    return mealDataForMonth
+    dates = [datetime.today().replace(tzinfo=pytz.timezone("Asia/Seoul"))]
+    for _ in range(2):
+        dates.append(dates[-1] + timedelta(days=1))
+    for date in dates:
+        foundMeal = [meal async for meal in database["meal"].find(
+            {
+                "date": date.strftime("%Y%m%d"),
+            }
+        )]
+        if foundMeal:
+            for meal in foundMeal:
+                meal.pop("_id")
+            return JSONResponse(foundMeal)
+    return JSONResponse([])

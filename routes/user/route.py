@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 from utilities.http import Post
 from utilities.config import GetConfig
 from utilities.database.func import GetDatabase
-from utilities.barcodeGenerator import GenerateBarcode
 from utilities.security import HashPassword, GenerateSalt
 
 config = GetConfig()
@@ -286,8 +285,7 @@ async def GenerateUserInformation(request: Request) -> Response:
         request.headers.get("Authorization") == ""
     ):
         return JSONResponse(
-            status_code=400,
-            content={"message": "Token not found", "data": {}}
+            status_code=400, content={"message": "Token not found", "data": {}}
         )
     token = request.headers.get("Authorization").replace("Token ", "")
     findToken = await database["token"].find_one({"accessToken": token})
@@ -295,19 +293,13 @@ async def GenerateUserInformation(request: Request) -> Response:
         return JSONResponse(
             status_code=401, content={"message": "Token not found", "data": {}}
         )
-    if findToken["accessTokenExpiredAt"] < int(
-        time.mktime(
-            (datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))).timetuple()
-        )
-    ):
-        return JSONResponse(
-            status_code=406, content={"message": "Token expired", "data": {}}
-        )
     user = await database["user"].find_one({"_id": findToken["userId"]})
-    return JSONResponse({
-        "message": "Successfully generated user information",
-        "data": {
-            "name": user["username"],
-            "studentId": user["studentId"],
+    return JSONResponse(
+        {
+            "message": "Successfully generated user information",
+            "data": {
+                "name": user["username"],
+                "studentId": user["studentId"],
+            },
         }
-    })
+    )
