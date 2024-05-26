@@ -27,7 +27,7 @@ while True:
             f.write(
                 """from fastapi import APIRouter
                 
-from utilities.config import getConfig
+from utilities.config import GetConfig
 
 router = APIRouter()
 

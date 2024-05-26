@@ -122,7 +122,7 @@ async def SignUp(request: Request) -> Response:
     userData = await request.json()
     if await database["user"].find_one({"email": userData["email"]}) or await database[
         "user"
-    ].find_one({"username": userData["username"]}):
+    ].find_one({"userId": userData["userId"]}):
         return JSONResponse(status_code=409, content={"message": "User already exists"})
     salt = GenerateSalt(saltLength=64)
     hashedPassword = HashPassword(password=userData["password"], salt=salt)
