@@ -59,6 +59,27 @@ async def Category(request: Request, category: str):
     if user is None:
         return JSONResponse({"message": "Invalid User"}, status_code=401)
 
+    if category == "all":
+        posts = []
+        async for document in database["post"].find():
+            user = await database["user"].find_one({"_id": document["author"]})
+            posts.append(
+                {
+                    "id": str(document["_id"]),
+                    "title": document["title"],
+                    "user": {
+                        "id": str(user["userId"]),
+                        "authorName": user["username"],
+                        "isAdmin": user["isSuper"],
+                    },
+                    "commentCount": 0,
+                    "viewCount": 0,
+                    "updatedAt": document["updatedAt"].strftime("%Y-%m-%d"),
+                    "likeCount": 0,
+                }
+            )
+
+        return JSONResponse(posts, status_code=200)
     board = await database["board"].find_one({"id": category})
     if board is None:
         return JSONResponse({"message": "Invalid Category"}, status_code=404)
@@ -82,7 +103,7 @@ async def Category(request: Request, category: str):
             }
         )
 
-    return JSONResponse(posts, status_code=201)
+    return JSONResponse(posts, status_code=200)
 
 
 @router.post("/{category}/write")
