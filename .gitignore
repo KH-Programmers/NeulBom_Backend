@@ -7,6 +7,7 @@ __pycache__/
 test.py
 temp.txt
 utilities\login.py
+settings.json
 
 # C extensions
 *.so
