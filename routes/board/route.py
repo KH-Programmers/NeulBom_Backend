@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
+from bson import ObjectId
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -130,3 +131,34 @@ async def Write(request: Request, category: str, post: Post):
         }
     )
     return JSONResponse({"status": "success"}, status_code=201)
+
+@router.get("/article/{id}")
+async def Article(request: Request, id: str):
+    token = request.headers.get("Authorization").replace("Token ", "")
+    user = await database["user"].find_one(
+        {"_id": (await database["token"].find_one({"accessToken": token}))["userId"]}
+    )
+    if user is None:
+        return JSONResponse({"message": "Invalid User"}, status_code=401)
+    
+    post = await database["post"].find_one({"_id": ObjectId(id)})
+    if post is None:
+        return JSONResponse({"message": "Invalid Post"}, status_code=404)
+
+    user = await database["user"].find_one({"_id": post["author"]})
+    return JSONResponse(
+        {
+            "id": str(post["_id"]),
+            "title": post["title"],
+            "text": post["text"],
+            "user": {
+                "authorName": user["username"],
+                "isAdmin": user["isSuper"],
+            },
+            "comments": [],
+            "viewCount": 0,
+            "updatedAt": post["updatedAt"].strftime("%Y-%m-%d"),
+            "likeCount": 0,
+        },
+        status_code=200,
+    )

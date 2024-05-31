@@ -1,6 +1,5 @@
 fastapi
 uvicorn
-bson
 pymongo[srv]
 motor
 pydantic

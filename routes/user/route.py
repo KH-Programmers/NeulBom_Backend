@@ -200,9 +200,12 @@ async def Authentication(request: Request) -> Response:
         return JSONResponse(
             status_code=406, content={"message": "Token expired", "data": {}}
         )
+    user = await database["user"].find_one({"_id": findToken["userId"]})
     return JSONResponse(
         status_code=200,
-        content={"message": "Token valid", "data": {}},
+        content={"message": "Token valid", "data": {
+            "isSuper": user["isSuper"],
+        }},
     )
 
 
@@ -303,26 +306,3 @@ async def GenerateUserInformation(request: Request) -> Response:
             },
         }
     )
-
-
-@router.get("/isValidation")
-async def IsValidation(request: Request) -> Response:
-    """
-    It's a route checking the validity of token
-    Parameters:
-    - Access Token ( in header )
-    """
-    if (request.headers.get("Authorization") is None) or (
-        request.headers.get("Authorization") == ""
-    ):
-        return JSONResponse(
-            status_code=400, content={"message": "Token not found", "data": {}}
-        )
-    token = request.headers.get("Authorization").replace("Token ", "")
-    findToken = await database["token"].find_one({"accessToken": token})
-    if not findToken:
-        return JSONResponse(
-            status_code=401, content={"message": "Token not found", "data": {}}
-        )
-    user = await database["user"].find_one({"_id": findToken["userId"]})
-    return JSONResponse({"isSuper": user["isSuper"]})
