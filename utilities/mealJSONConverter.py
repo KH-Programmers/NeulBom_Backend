@@ -23,7 +23,7 @@ def ConvertJSON(aJSON):
     for string in strings:
         string = string.replace('*', '')
         file = OrderedDict()
-        file["name"] = string.split(' ', 1)[0]
+        file["name"] = string.split(' ', 1)[0].replace('1', '').replace('(완)', '')
 
         allergyList = list()
 
@@ -44,10 +44,23 @@ def ConvertJSON(aJSON):
 
         file["allergies"] = allergyList
         smallJSONList.append(file)
+    anOutputFile["menu"] = smallJSONList
 
+    return anOutputFile
+
+def BatchConvertJSON(aJSON):
+    """
+    JSON List를 입력으로 받으면 전부 변환하여 바꿔줌
+    Parameter : JSON List
+    return JSON List
+    """
     anOutputFile = OrderedDict()
 
-    anOutputFile["isLunch"] = False
-    anOutputFile["menu"] = smallJSONList
+    smallJSONList = list()
+
+    for JSON in aJSON:
+        smallJSONList.append(ConvertJSON(JSON))
+    
+    anOutputFile = smallJSONList
 
     return anOutputFile
