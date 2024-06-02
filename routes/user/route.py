@@ -189,6 +189,7 @@ async def Authentication(request: Request) -> Response:
     token = request.headers.get("Authorization").replace("Token ", "")
     findToken = await database["token"].find_one({"accessToken": token})
     if not findToken:
+        print(token)
         return JSONResponse(
             status_code=401, content={"message": "Token not found", "data": {}}
         )
