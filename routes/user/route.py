@@ -27,6 +27,28 @@ async def CaptchaVerify(token: str) -> bool:
     return response["success"]
 
 
+async def SignUpLog(username: str, email: str, studentId: str) -> None:
+    await Post(
+        url=config["DATABASE"]["URI"],
+        body={
+            "embeds": [
+                {
+                    "title": "📥 Sign Up",
+                    "fields": [
+                        {"name": "이름", "value": username, "inline": False},
+                        {"name": "학번", "value": studentId, "inline": False},
+                        {"name": "이메일", "value": email, "inline": False},
+                    ],
+                    "timestamp": datetime.now()
+                    .replace(tzinfo=pytz.timezone("Asia/Seoul"))
+                    .isoformat(),
+                    "color": 1752220,
+                }
+            ]
+        },
+    )
+
+
 @router.get("/")
 async def GenerateUserInformation(request: Request) -> Response:
     """
@@ -167,6 +189,11 @@ async def SignUp(request: Request) -> Response:
             ),
             "graduated": False,
         }
+    )
+    await SignUpLog(
+        username=userData["username"],
+        email=userData["email"],
+        studentId=userData["studentId"],
     )
     return JSONResponse(
         status_code=201,
