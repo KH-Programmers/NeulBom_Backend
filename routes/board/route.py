@@ -18,6 +18,8 @@ database = GetDatabase(config["DATABASE"]["URI"])
 class Post(BaseModel):
     title: str
     text: str
+    isAnonymous: bool = False
+    isTeacher: bool = False
 
 
 @router.get("/")
@@ -62,21 +64,25 @@ async def Category(request: Request, category: str):
 
     if category == "all":
         posts = []
-        async for document in database["post"].find():
+        async for document in database["post"].find({"viewable": True}):
             user = await database["user"].find_one({"_id": document["author"]})
             posts.append(
                 {
                     "id": str(document["_id"]),
                     "title": document["title"],
+                    "text": document["text"],
                     "user": {
-                        "id": str(user["userId"]),
                         "authorName": user["username"],
                         "isAdmin": user["isSuper"],
                     },
-                    "commentCount": 0,
+                    "comments": [],
+                    "createdAt": datetime.now().strftime("%Y-%m-%d"),
+                    "updatedAt": datetime.now().strftime("%Y-%m-%d"),
                     "viewCount": 0,
-                    "updatedAt": document["updatedAt"].strftime("%Y-%m-%d"),
-                    "likeCount": 0,
+                    "likeCount": len(document["likedUsers"]),
+                    "canDelete": user["_id"] == document["author"],
+                    "isAnonymous": document["isAnonymous"],
+                    "isAdmin": document["isAdmin"],
                 }
             )
 
@@ -86,21 +92,27 @@ async def Category(request: Request, category: str):
         return JSONResponse({"message": "Invalid Category"}, status_code=404)
 
     posts = []
-    async for document in database["post"].find({"category": category}):
+    async for document in database["post"].find(
+        {"category": category, "viewable": True}
+    ):
         user = await database["user"].find_one({"_id": document["author"]})
         posts.append(
             {
                 "id": str(document["_id"]),
                 "title": document["title"],
+                "text": document["text"],
                 "user": {
-                    "id": str(user["userId"]),
                     "authorName": user["username"],
                     "isAdmin": user["isSuper"],
                 },
-                "commentCount": 0,
+                "comments": [],
+                "createdAt": datetime.now().strftime("%Y-%m-%d"),
+                "updatedAt": datetime.now().strftime("%Y-%m-%d"),
                 "viewCount": 0,
-                "updatedAt": document["updatedAt"].strftime("%Y-%m-%d"),
-                "likeCount": 0,
+                "likeCount": len(document["likedUsers"]),
+                "canDelete": user["_id"] == document["author"],
+                "isAnonymous": document["isAnonymous"],
+                "isAdmin": document["isAdmin"],
             }
         )
 
@@ -128,9 +140,15 @@ async def Write(request: Request, category: str, post: Post):
             "category": category,
             "createdAt": datetime.now(),
             "updatedAt": datetime.now(),
+            "viewCount": 0,
+            "likedUsers": [],
+            "viewable": True,
+            "isAnonymous": post.isAnonymous,
+            "isAdmin": post.isAdmin,
         }
     )
     return JSONResponse({"status": "success"}, status_code=201)
+
 
 @router.get("/article/{id}")
 async def Article(request: Request, id: str):
@@ -140,10 +158,22 @@ async def Article(request: Request, id: str):
     )
     if user is None:
         return JSONResponse({"message": "Invalid User"}, status_code=401)
-    
+
     post = await database["post"].find_one({"_id": ObjectId(id)})
     if post is None:
         return JSONResponse({"message": "Invalid Post"}, status_code=404)
+
+    if not post["viewable"]:
+        return JSONResponse({"message": "Invalid Post"}, status_code=404)
+
+    await database["post"].update_one(
+        {
+            "_id": ObjectId(id),
+        },
+        {
+            "$set": {"viewCount": post["viewCount"] + 1},
+        },
+    )
 
     user = await database["user"].find_one({"_id": post["author"]})
     return JSONResponse(
@@ -154,11 +184,111 @@ async def Article(request: Request, id: str):
             "user": {
                 "authorName": user["username"],
                 "isAdmin": user["isSuper"],
+                "isLiked": user["_id"] in post["likedUsers"],
             },
             "comments": [],
-            "viewCount": 0,
             "updatedAt": post["updatedAt"].strftime("%Y-%m-%d"),
-            "likeCount": 0,
+            "viewCount": post["viewCount"],
+            "likeCount": len(post["likedUsers"]),
+            "canDelete": user["_id"] == post["author"],
+            "isAnonymous": post["isAnonymous"],
+            "isAdmin": post["isAdmin"],
+        },
+        status_code=200,
+    )
+
+
+@router.put("/article/{id}/like")
+async def LikeArticle(request: Request, id: str):
+    token = request.headers.get("Authorization").replace("Token ", "")
+    user = await database["user"].find_one(
+        {"_id": (await database["token"].find_one({"accessToken": token}))["userId"]}
+    )
+    if user is None:
+        return JSONResponse({"message": "Invalid User"}, status_code=401)
+
+    post = await database["post"].find_one({"_id": ObjectId(id)})
+    if post is None:
+        return JSONResponse({"message": "Invalid Post"}, status_code=404)
+
+    if not post["viewable"]:
+        return JSONResponse({"message": "Invalid Post"}, status_code=404)
+
+    if user["_id"] in post["likedUsers"]:
+        return JSONResponse({"message": "Already Liked"}, status_code=400)
+    await database["post"].update_one(
+        {
+            "_id": ObjectId(id),
+        },
+        {
+            "$push": {"likedUsers": user["_id"]},
+        },
+    )
+
+    return JSONResponse(
+        {
+            "id": str(post["_id"]),
+            "title": post["title"],
+            "text": post["text"],
+            "user": {
+                "authorName": user["username"],
+                "isAdmin": user["isSuper"],
+            },
+            "comments": [],
+            "updatedAt": post["updatedAt"].strftime("%Y-%m-%d"),
+            "viewCount": post["viewCount"],
+            "likeCount": len(post["likedUsers"]),
+            "canDelete": user["_id"] == post["author"],
+            "isAnonymous": post["isAnonymous"],
+            "isAdmin": post["isAdmin"],
+        },
+        status_code=200,
+    )
+
+
+@router.delete("/article/{id}/like")
+async def DislikeArticle(request: Request, id: str):
+    token = request.headers.get("Authorization").replace("Token ", "")
+    user = await database["user"].find_one(
+        {"_id": (await database["token"].find_one({"accessToken": token}))["userId"]}
+    )
+    if user is None:
+        return JSONResponse({"message": "Invalid User"}, status_code=401)
+
+    post = await database["post"].find_one({"_id": ObjectId(id)})
+    if post is None:
+        return JSONResponse({"message": "Invalid Post"}, status_code=404)
+
+    if not post["viewable"]:
+        return JSONResponse({"message": "Invalid Post"}, status_code=404)
+
+    if user["_id"] not in post["likedUsers"]:
+        return JSONResponse({"message": "Already Disliked"}, status_code=400)
+    await database["post"].update_one(
+        {
+            "_id": ObjectId(id),
+        },
+        {
+            "$pull": {"likedUsers": user["_id"]},
+        },
+    )
+
+    return JSONResponse(
+        {
+            "id": str(post["_id"]),
+            "title": post["title"],
+            "text": post["text"],
+            "user": {
+                "authorName": user["username"],
+                "isAdmin": user["isSuper"],
+            },
+            "comments": [],
+            "updatedAt": post["updatedAt"].strftime("%Y-%m-%d"),
+            "viewCount": post["viewCount"],
+            "likeCount": len(post["likedUsers"]),
+            "canDelete": user["_id"] == post["author"],
+            "isAnonymous": post["isAnonymous"],
+            "isAdmin": post["isAdmin"],
         },
         status_code=200,
     )
