@@ -19,7 +19,7 @@ class Post(BaseModel):
     title: str
     text: str
     isAnonymous: bool = False
-    isTeacher: bool = False
+    isAdmin: bool = False
 
 
 @router.get("/")
