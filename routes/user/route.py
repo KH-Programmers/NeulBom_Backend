@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 import time
 import pytz
 import base64
+from aiohttp import ClientSession
 from datetime import datetime, timedelta
 
 from utilities.http import Post
@@ -28,26 +29,27 @@ async def CaptchaVerify(token: str) -> bool:
 
 
 async def SignUpLog(username: str, email: str, studentId: str) -> None:
-    response = await Post(
-        url=config["LOG"]["DISCORD_WEBHOOK"],
-        body={
-            "embeds": [
-                {
-                    "title": "📥 Sign Up",
-                    "fields": [
-                        {"name": "이름", "value": username, "inline": False},
-                        {"name": "학번", "value": studentId, "inline": False},
-                        {"name": "이메일", "value": email, "inline": False},
-                    ],
-                    "timestamp": datetime.now()
-                    .replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                    .isoformat(),
-                    "color": 1752220,
-                }
-            ]
-        },
-    )
-    print(response)
+    async with ClientSession() as session:
+        async with session.post(
+            url=config["LOG"]["DISCORD_WEBHOOK"],
+            json={
+                "embeds": [
+                    {
+                        "title": "📥 Sign Up",
+                        "fields": [
+                            {"name": "이름", "value": username, "inline": False},
+                            {"name": "학번", "value": studentId, "inline": False},
+                            {"name": "이메일", "value": email, "inline": False},
+                        ],
+                        "timestamp": datetime.now()
+                        .replace(tzinfo=pytz.timezone("Asia/Seoul"))
+                        .isoformat(),
+                        "color": 1752220,
+                    }
+                ]
+            },
+        ):
+            pass
 
 
 @router.get("/")
