@@ -72,10 +72,7 @@ async def Category(request: Request, category: str):
                     "category": document["category"],
                     "title": document["title"],
                     "text": document["text"],
-                    "user": {
-                        "authorName": user["username"],
-                        "isAdmin": user["isSuper"],
-                    },
+                    "authorName": user["username"],
                     "comments": [],
                     "createdAt": datetime.now().strftime("%Y-%m-%d"),
                     "updatedAt": datetime.now().strftime("%Y-%m-%d"),
@@ -105,10 +102,7 @@ async def Category(request: Request, category: str):
                 "category": document["category"],
                 "title": document["title"],
                 "text": document["text"],
-                "user": {
-                    "authorName": user["username"],
-                    "isAdmin": user["isSuper"],
-                },
+                "authorName": user["username"],
                 "comments": [],
                 "createdAt": datetime.now().strftime("%Y-%m-%d"),
                 "updatedAt": datetime.now().strftime("%Y-%m-%d"),
@@ -180,7 +174,7 @@ async def Article(request: Request, id: str):
         },
     )
 
-    user = await database["user"].find_one({"_id": post["author"]})
+    author = await database["user"].find_one({"_id": post["author"]})
 
     categories = [post["category"]]
 
@@ -209,11 +203,7 @@ async def Article(request: Request, id: str):
             "categories": categories,
             "title": post["title"],
             "text": post["text"],
-            "user": {
-                "authorName": user["username"],
-                "isAdmin": user["isSuper"],
-                "isLiked": user["_id"] in post["likedUsers"],
-            },
+            "authorName": author["username"],
             "comments": [],
             "updatedAt": post["updatedAt"].strftime("%Y-%m-%d"),
             "viewCount": post["viewCount"],
@@ -221,6 +211,7 @@ async def Article(request: Request, id: str):
             "canDelete": user["_id"] == post["author"],
             "isAnonymous": post["isAnonymous"],
             "isAdmin": post["isAdmin"],
+            "isLiked": user["_id"] in post["likedUsers"],
         },
         status_code=200,
     )
