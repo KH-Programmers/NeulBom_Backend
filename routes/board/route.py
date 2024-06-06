@@ -87,6 +87,8 @@ async def Category(request: Request, category: str):
                 }
             )
 
+        posts.reverse()
+
         return JSONResponse(posts, status_code=200)
     board = await database["board"].find_one({"id": category})
     if board is None:
@@ -117,6 +119,7 @@ async def Category(request: Request, category: str):
                 "isAdmin": document["isAdmin"],
             }
         )
+    posts.reverse()
 
     return JSONResponse(posts, status_code=200)
 
