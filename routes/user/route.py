@@ -28,8 +28,8 @@ async def CaptchaVerify(token: str) -> bool:
 
 
 async def SignUpLog(username: str, email: str, studentId: str) -> None:
-    await Post(
-        url=config["DATABASE"]["URI"],
+    response = await Post(
+        url=config["LOG"]["DISCORD_WEBHOOK"],
         body={
             "embeds": [
                 {
@@ -47,6 +47,7 @@ async def SignUpLog(username: str, email: str, studentId: str) -> None:
             ]
         },
     )
+    print(response)
 
 
 @router.get("/")
@@ -73,6 +74,11 @@ async def GenerateUserInformation(request: Request) -> Response:
             status_code=401, content={"message": "Token not found", "data": {}}
         )
     user = await database["user"].find_one({"_id": findToken["userId"]})
+
+    if not user:
+        return JSONResponse(
+            status_code=401, content={"message": "User not found", "data": {}}
+        )
     return JSONResponse(
         {
             "message": "Successfully generated user information",
