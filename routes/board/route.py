@@ -69,6 +69,7 @@ async def Category(request: Request, category: str):
             posts.append(
                 {
                     "id": str(document["_id"]),
+                    "category": document["category"],
                     "title": document["title"],
                     "text": document["text"],
                     "user": {
@@ -99,6 +100,7 @@ async def Category(request: Request, category: str):
         posts.append(
             {
                 "id": str(document["_id"]),
+                "category": document["category"],
                 "title": document["title"],
                 "text": document["text"],
                 "user": {
@@ -176,9 +178,32 @@ async def Article(request: Request, id: str):
     )
 
     user = await database["user"].find_one({"_id": post["author"]})
+
+    categories = [post["category"]]
+
+    while True:
+        board = await database["board"].find_one(
+            {"children": {"$in": [categories[-1]]}}
+        )
+        if board is None or board.get("parent") is None:
+            categories.append("all")
+            break
+        categories.append(board["id"])
+
+    categories.reverse()
+    categories = [
+        (
+            "전체"
+            if categoryId == "all"
+            else (await database["board"].find_one({"id": categoryId}))["name"]
+        )
+        for categoryId in categories
+    ]
+
     return JSONResponse(
         {
             "id": str(post["_id"]),
+            "categories": categories,
             "title": post["title"],
             "text": post["text"],
             "user": {
