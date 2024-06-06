@@ -198,6 +198,33 @@ async def Article(request: Request, id: str):
     )
 
 
+@router.delete("/article/{id}")
+async def DeleteArticle(request: Request, id: str):
+    token = request.headers.get("Authorization").replace("Token ", "")
+    user = await database["user"].find_one(
+        {"_id": (await database["token"].find_one({"accessToken": token}))["userId"]}
+    )
+    if user is None:
+        return JSONResponse({"message": "Invalid User"}, status_code=401)
+
+    post = await database["post"].find_one({"_id": ObjectId(id)})
+    if post is None:
+        return JSONResponse({"message": "Invalid Post"}, status_code=404)
+
+    if user["_id"] != post["author"]:
+        return JSONResponse({"message": "Invalid User"}, status_code=301)
+
+    await database["post"].update_one(
+        {
+            "_id": ObjectId(id),
+        },
+        {
+            "$set": {"viewable": False},
+        },
+    )
+    return JSONResponse({"status": "success"}, status_code=204)
+
+
 @router.put("/article/{id}/like")
 async def LikeArticle(request: Request, id: str):
     token = request.headers.get("Authorization").replace("Token ", "")
