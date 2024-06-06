@@ -187,14 +187,13 @@ async def LogOut(request: Request) -> Response:
     - message: The message
     - data: The data ( logout message )
     """
-    token = request.headers.get("Authorization")
+    token = request.headers.get("Authorization").replace("Token ", "")
     findToken = await database["token"].find_one({"accessToken": token})
     if not findToken:
         return JSONResponse(
             status_code=406, content={"message": "Token not found", "data": {}}
         )
-    user = await database["user"].find_one({"_id": findToken["userId"]})
-    await database["token"].delete_many({"userId": user["_id"]})
+    await database["token"].delete_one({"accessToken": token})
     return JSONResponse(
         status_code=200,
         content={"message": "Successfully logged out!", "data": {}},
