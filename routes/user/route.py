@@ -57,6 +57,8 @@ async def GenerateUserInformation(request: Request) -> Response:
             "data": {
                 "name": user["username"],
                 "studentId": user["studentId"],
+                "isSuper": user["isSuper"],
+                "isTeacher": user["isTeacher"],
             },
         }
     )
