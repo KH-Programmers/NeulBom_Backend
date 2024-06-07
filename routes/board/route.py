@@ -25,11 +25,8 @@ class Post(BaseModel):
 @router.get("/")
 async def Index():
     boards = [
-        page
-        for page in [
-            {"id": "popular", "name": "인기글", "isWritable": False},
-            {"id": "all", "name": "전체", "isWritable": False},
-        ]
+        {"id": "popular", "name": "인기글", "isWritable": False},
+        {"id": "all", "name": "전체", "isWritable": False},
     ]
     async for document in database["board"].find():
         boards.append(document)
