@@ -326,16 +326,16 @@ async def Article(request: Request, id: str):
             {"children": {"$in": [categories[-1]]}}
         )
         if board is None or board.get("parent") is None:
-            categories.append(["전체", "all"])
+            categories.append('all')
             break
-        categories.append([board['name'], board["id"]])
+        categories.append(board["id"])
 
     categories.reverse()
     categories = [
         (
-            "전체"
+            ["all", "전체"]
             if categoryId == "all"
-            else (await database["board"].find_one({"id": categoryId}))["name"]
+            else [categoryId, (await database["board"].find_one({"id": categoryId}))["name"]]
         )
         for categoryId in categories
     ]
