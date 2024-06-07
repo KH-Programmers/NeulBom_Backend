@@ -51,7 +51,7 @@ def CreateLogger(name: str, level: int):
     return logger
 
 
-async def DIscordLog(logTitle: str, fields: List[Tuple[str, str]], color: int) -> None:
+async def DiscordLog(logTitle: str, fields: List[Tuple[str, str]], color: int) -> None:
     async with ClientSession() as session:
         async with session.post(
             url=config["LOG"]["DISCORD_WEBHOOK"],
