@@ -326,9 +326,9 @@ async def Article(request: Request, id: str):
             {"children": {"$in": [categories[-1]]}}
         )
         if board is None or board.get("parent") is None:
-            categories.append("all")
+            categories.append(["전체", "all"])
             break
-        categories.append(board["id"])
+        categories.append([board['name'], board["id"]])
 
     categories.reverse()
     categories = [
