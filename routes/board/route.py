@@ -115,7 +115,7 @@ async def Category(request: Request, category: str):
                     "updatedAt": datetime.now()
                     .replace(tzinfo=timezone("Asia/Seoul"))
                     .strftime("%Y-%m-%d"),
-                    "viewCount": 0,
+                    "viewCount": document["viewCount"],
                     "likeCount": len(document["likedUsers"]),
                     "canDelete": user["_id"] == document["author"],
                     "isAnonymous": document["isAnonymous"],
