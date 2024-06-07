@@ -144,14 +144,14 @@ async def Write(request: Request, category: str, post: Post):
             "isAdmin": post.isAdmin,
         }
     )
-    userData = await request.json()
     await DiscordLog(
         logTitle="📮 Post Uploaded",
         fields=[
             ("제목", post.title),
             ("카테고리", category),
-            ("작성자", user["username"]),
+            ("아이디", user["username"]),
             ("학번", user["studentId"]),
+            ("내용", post.text[:1000]),
         ],
         color=5763719,
     )
