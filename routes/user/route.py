@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 
 from utilities.http import Post
 from utilities.config import GetConfig
+from utilities.logger import DiscordLog
 from utilities.database.func import GetDatabase
 from utilities.security import HashPassword, GenerateSalt
 
@@ -26,30 +27,6 @@ async def CaptchaVerify(token: str) -> bool:
         f"&secret={config['CAPTCHA']['HCAPTCHA_SECRET']}",
     )
     return response["success"]
-
-
-async def SignUpLog(username: str, email: str, studentId: str) -> None:
-    async with ClientSession() as session:
-        async with session.post(
-            url=config["LOG"]["DISCORD_WEBHOOK"],
-            json={
-                "embeds": [
-                    {
-                        "title": "📥 Sign Up",
-                        "fields": [
-                            {"name": "이름", "value": username, "inline": False},
-                            {"name": "학번", "value": studentId, "inline": False},
-                            {"name": "이메일", "value": email, "inline": False},
-                        ],
-                        "timestamp": datetime.now()
-                        .replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                        .isoformat(),
-                        "color": 1752220,
-                    }
-                ]
-            },
-        ):
-            pass
 
 
 @router.get("/")
@@ -198,10 +175,14 @@ async def SignUp(request: Request) -> Response:
             "graduated": False,
         }
     )
-    await SignUpLog(
-        username=userData["username"],
-        email=userData["email"],
-        studentId=userData["studentId"],
+    await DiscordLog(
+        logTitle="📥 Sign Up",
+        fields=[
+            ("이름", userData["username"]),
+            ("학번", userData["studentId"]),
+            ("이메일", userData["email"]),
+        ],
+        color=1752220,
     )
     return JSONResponse(
         status_code=201,

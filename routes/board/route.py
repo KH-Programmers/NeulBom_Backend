@@ -6,6 +6,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 from utilities.config import GetConfig
+from utilities.logger import DiscordLog
 from utilities.database.func import GetDatabase
 
 router = APIRouter()
@@ -73,7 +74,7 @@ async def Category(request: Request, category: str):
                     "comments": [],
                     "createdAt": datetime.now().strftime("%Y-%m-%d"),
                     "updatedAt": datetime.now().strftime("%Y-%m-%d"),
-                    "viewCount": 0,
+                    "viewCount": document["viewCounts"],
                     "likeCount": len(document["likedUsers"]),
                     "canDelete": user["_id"] == document["author"],
                     "isAnonymous": document["isAnonymous"],
@@ -103,7 +104,7 @@ async def Category(request: Request, category: str):
                 "comments": [],
                 "createdAt": datetime.now().strftime("%Y-%m-%d"),
                 "updatedAt": datetime.now().strftime("%Y-%m-%d"),
-                "viewCount": 0,
+                "viewCount": document["viewCounts"],
                 "likeCount": len(document["likedUsers"]),
                 "canDelete": user["_id"] == document["author"],
                 "isAnonymous": document["isAnonymous"],
@@ -142,6 +143,17 @@ async def Write(request: Request, category: str, post: Post):
             "isAnonymous": post.isAnonymous,
             "isAdmin": post.isAdmin,
         }
+    )
+    userData = await request.json()
+    await DiscordLog(
+        logTitle="📮 Post Uploaded",
+        fields=[
+            ("제목", post.title),
+            ("카테고리", category),
+            ("작성자", user["username"]),
+            ("학번", user["studentId"]),
+        ],
+        color=5763719,
     )
     return JSONResponse({"status": "success"}, status_code=201)
 
