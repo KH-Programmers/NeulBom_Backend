@@ -109,12 +109,8 @@ async def Category(request: Request, category: str):
                     "text": document["text"],
                     "authorName": user["username"],
                     "comments": comments,
-                    "createdAt": datetime.now()
-                    .replace(tzinfo=timezone("Asia/Seoul"))
-                    .strftime("%Y-%m-%d"),
-                    "updatedAt": datetime.now()
-                    .replace(tzinfo=timezone("Asia/Seoul"))
-                    .strftime("%Y-%m-%d"),
+                    "createdAt": datetime.now().replace(tzinfo=timezone("Asia/Seoul")),
+                    "updatedAt": datetime.now().replace(tzinfo=timezone("Asia/Seoul")),
                     "viewCount": document["viewCount"],
                     "likeCount": len(document["likedUsers"]),
                     "canDelete": user["_id"] == document["author"],
@@ -142,7 +138,7 @@ async def Category(request: Request, category: str):
                 "authorName": (
                     await database["user"].find_one({"_id": comment["author"]})
                 )["username"],
-                "createdAt": comment["createdAt"].strftime("%Y-%m-%d"),
+                "createdAt": comment["createdAt"],
                 "isAnonymous": comment["isAnonymous"],
                 "isAdmin": comment["isAdmin"],
                 "canDelete": user["_id"] == comment["author"],
@@ -176,8 +172,8 @@ async def Category(request: Request, category: str):
                 "text": document["text"],
                 "authorName": user["username"],
                 "comments": comments,
-                "createdAt": datetime.now().strftime("%Y-%m-%d"),
-                "updatedAt": datetime.now().strftime("%Y-%m-%d"),
+                "createdAt": datetime.now(),
+                "updatedAt": datetime.now(),
                 "viewCount": document["viewCount"],
                 "likeCount": len(document["likedUsers"]),
                 "canDelete": user["_id"] == document["author"],
@@ -187,7 +183,7 @@ async def Category(request: Request, category: str):
         )
     if board.get("children") is not None:
         async for childBoard in database["board"].find(
-            {"id": {"$in": list(map(lambda x: x['id'], board["children"]))}}
+            {"id": {"$in": list(map(lambda x: x["id"], board["children"]))}}
         ):
             async for document in database["post"].find(
                 {"category": childBoard["id"], "viewable": True}
@@ -200,7 +196,7 @@ async def Category(request: Request, category: str):
                         "authorName": (
                             await database["user"].find_one({"_id": comment["author"]})
                         )["username"],
-                        "createdAt": comment["createdAt"].strftime("%Y-%m-%d"),
+                        "createdAt": comment["createdAt"],
                         "isAnonymous": comment["isAnonymous"],
                         "isAdmin": comment["isAdmin"],
                         "canDelete": user["_id"] == comment["author"],
@@ -213,7 +209,7 @@ async def Category(request: Request, category: str):
                                         {"_id": child["author"]}
                                     )
                                 )["username"],
-                                "createdAt": child["createdAt"].strftime("%Y-%m-%d"),
+                                "createdAt": child["createdAt"],
                                 "isAnonymous": child["isAnonymous"],
                                 "isAdmin": child["isAdmin"],
                                 "canDelete": user["_id"] == child["author"],
@@ -236,8 +232,8 @@ async def Category(request: Request, category: str):
                         "text": document["text"],
                         "authorName": user["username"],
                         "comments": comments,
-                        "createdAt": datetime.now().strftime("%Y-%m-%d"),
-                        "updatedAt": datetime.now().strftime("%Y-%m-%d"),
+                        "createdAt": document["createdAt"],
+                        "updatedAt": document["updatedAt"],
                         "viewCount": document["viewCount"],
                         "likeCount": len(document["likedUsers"]),
                         "canDelete": user["_id"] == document["author"],
@@ -245,7 +241,14 @@ async def Category(request: Request, category: str):
                         "isAdmin": document["isAdmin"],
                     }
                 )
-    posts.sort(key=lambda x: x["updatedAt"], reverse=True)
+    posts.sort(key=lambda x: x["updatedAt"])
+    for post in posts:
+        post["createdAt"] = post["createdAt"].strftime("%Y-%m-%d")
+        post["updatedAt"] = post["updatedAt"].strftime("%Y-%m-%d")
+        for comment in posts[posts.index(post)]['comments']:
+            comment["createdAt"] = comment["createdAt"].strftime("%Y-%m-%d")
+            for child in comment["children"]:
+                child["createdAt"] = child["createdAt"].strftime("%Y-%m-%d")
 
     return JSONResponse(posts, status_code=200)
 
@@ -326,7 +329,7 @@ async def Article(request: Request, id: str):
             {"children": {"$in": [categories[-1]]}}
         )
         if board is None or board.get("parent") is None:
-            categories.append('all')
+            categories.append("all")
             break
         categories.append(board["id"])
 
@@ -335,7 +338,10 @@ async def Article(request: Request, id: str):
         (
             ["all", "전체"]
             if categoryId == "all"
-            else [categoryId, (await database["board"].find_one({"id": categoryId}))["name"]]
+            else [
+                categoryId,
+                (await database["board"].find_one({"id": categoryId}))["name"],
+            ]
         )
         for categoryId in categories
     ]
