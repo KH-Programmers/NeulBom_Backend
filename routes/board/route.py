@@ -82,20 +82,24 @@ async def Category(request: Request, category: str):
                             "id": str(child["_id"]),
                             "content": str(child["text"]),
                             "authorName": (
-                                await database["user"].find_one({"_id": child["author"]})
+                                await database["user"].find_one(
+                                    {"_id": child["author"]}
+                                )
                             )["username"],
                             "createdAt": child["createdAt"].strftime("%Y-%m-%d"),
                             "isAnonymous": child["isAnonymous"],
                             "isAdmin": child["isAdmin"],
                             "canDelete": user["_id"] == child["author"],
-                            "children": []
+                            "children": [],
                         }
                         for child in await database["comment"].find(
                             {"_id": {"$in": comment["children"]}}
                         )
                     ],
                 }
-                async for comment in database["comment"].find({"article": document["_id"], "viewable": True})
+                async for comment in database["comment"].find(
+                    {"article": document["_id"], "viewable": True}
+                )
             ]
             posts.append(
                 {
@@ -153,14 +157,16 @@ async def Category(request: Request, category: str):
                         "isAnonymous": child["isAnonymous"],
                         "isAdmin": child["isAdmin"],
                         "canDelete": user["_id"] == child["author"],
-                        "children": []
+                        "children": [],
                     }
                     for child in await database["comment"].find(
                         {"_id": {"$in": comment["children"]}}
                     )
                 ],
             }
-            async for comment in database["comment"].find({"article": document["_id"], "viewable": True})
+            async for comment in database["comment"].find(
+                {"article": document["_id"], "viewable": True}
+            )
         ]
         posts.append(
             {
@@ -179,58 +185,66 @@ async def Category(request: Request, category: str):
                 "isAdmin": document["isAdmin"],
             }
         )
-    async for document in database["post"].find(
-        {"category": {"$in": board["children"]}, "viewable": True}
-    ):
-        user = await database["user"].find_one({"_id": document["author"]})
-        comments = [
-            {
-                "id": str(comment["_id"]),
-                "content": str(comment["text"]),
-                "authorName": (
-                    await database["user"].find_one({"_id": comment["author"]})
-                )["username"],
-                "createdAt": comment["createdAt"].strftime("%Y-%m-%d"),
-                "isAnonymous": comment["isAnonymous"],
-                "isAdmin": comment["isAdmin"],
-                "canDelete": user["_id"] == comment["author"],
-                "children": [
+    if board.get("children") is not None:
+        async for childBoard in database["board"].find(
+            {"id": {"$in": list(map(lambda x: x['id'], board["children"]))}}
+        ):
+            async for document in database["post"].find(
+                {"category": childBoard["id"], "viewable": True}
+            ):
+                user = await database["user"].find_one({"_id": document["author"]})
+                comments = [
                     {
-                        "id": str(child["_id"]),
-                        "content": str(child["text"]),
+                        "id": str(comment["_id"]),
+                        "content": str(comment["text"]),
                         "authorName": (
-                            await database["user"].find_one({"_id": child["author"]})
+                            await database["user"].find_one({"_id": comment["author"]})
                         )["username"],
-                        "createdAt": child["createdAt"].strftime("%Y-%m-%d"),
-                        "isAnonymous": child["isAnonymous"],
-                        "isAdmin": child["isAdmin"],
-                        "canDelete": user["_id"] == child["author"],
-                        "children": []
+                        "createdAt": comment["createdAt"].strftime("%Y-%m-%d"),
+                        "isAnonymous": comment["isAnonymous"],
+                        "isAdmin": comment["isAdmin"],
+                        "canDelete": user["_id"] == comment["author"],
+                        "children": [
+                            {
+                                "id": str(child["_id"]),
+                                "content": str(child["text"]),
+                                "authorName": (
+                                    await database["user"].find_one(
+                                        {"_id": child["author"]}
+                                    )
+                                )["username"],
+                                "createdAt": child["createdAt"].strftime("%Y-%m-%d"),
+                                "isAnonymous": child["isAnonymous"],
+                                "isAdmin": child["isAdmin"],
+                                "canDelete": user["_id"] == child["author"],
+                                "children": [],
+                            }
+                            for child in await database["comment"].find(
+                                {"_id": {"$in": comment["children"]}}
+                            )
+                        ],
                     }
-                    for child in await database["comment"].find(
-                        {"_id": {"$in": comment["children"]}}
+                    async for comment in database["comment"].find(
+                        {"article": document["_id"], "viewable": True}
                     )
-                ],
-            }
-            async for comment in database["comment"].find({"article": document["_id"], "viewable": True})
-        ]
-        posts.append(
-            {
-                "id": str(document["_id"]),
-                "category": document["category"],
-                "title": document["title"],
-                "text": document["text"],
-                "authorName": user["username"],
-                "comments": comments,
-                "createdAt": datetime.now().strftime("%Y-%m-%d"),
-                "updatedAt": datetime.now().strftime("%Y-%m-%d"),
-                "viewCount": document["viewCount"],
-                "likeCount": len(document["likedUsers"]),
-                "canDelete": user["_id"] == document["author"],
-                "isAnonymous": document["isAnonymous"],
-                "isAdmin": document["isAdmin"],
-            }
-        )
+                ]
+                posts.append(
+                    {
+                        "id": str(document["_id"]),
+                        "category": document["category"],
+                        "title": document["title"],
+                        "text": document["text"],
+                        "authorName": user["username"],
+                        "comments": comments,
+                        "createdAt": datetime.now().strftime("%Y-%m-%d"),
+                        "updatedAt": datetime.now().strftime("%Y-%m-%d"),
+                        "viewCount": document["viewCount"],
+                        "likeCount": len(document["likedUsers"]),
+                        "canDelete": user["_id"] == document["author"],
+                        "isAnonymous": document["isAnonymous"],
+                        "isAdmin": document["isAdmin"],
+                    }
+                )
     posts.sort(key=lambda x: x["updatedAt"], reverse=True)
 
     return JSONResponse(posts, status_code=200)
