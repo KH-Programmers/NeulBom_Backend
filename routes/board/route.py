@@ -73,7 +73,7 @@ async def Category(request: Request, category: str):
                     "authorName": (
                         await database["user"].find_one({"_id": comment["author"]})
                     )["username"],
-                    "createdAt": comment["createdAt"].strftime("%Y-%m-%d"),
+                    "createdAt": comment["createdAt"],
                     "isAnonymous": comment["isAnonymous"],
                     "isAdmin": comment["isAdmin"],
                     "canDelete": user["_id"] == comment["author"],
@@ -86,7 +86,7 @@ async def Category(request: Request, category: str):
                                     {"_id": child["author"]}
                                 )
                             )["username"],
-                            "createdAt": child["createdAt"].strftime("%Y-%m-%d"),
+                            "createdAt": child["createdAt"],
                             "isAnonymous": child["isAnonymous"],
                             "isAdmin": child["isAdmin"],
                             "canDelete": user["_id"] == child["author"],
@@ -109,8 +109,8 @@ async def Category(request: Request, category: str):
                     "text": document["text"],
                     "authorName": user["username"],
                     "comments": comments,
-                    "createdAt": datetime.now().replace(tzinfo=timezone("Asia/Seoul")),
-                    "updatedAt": datetime.now().replace(tzinfo=timezone("Asia/Seoul")),
+                    "createdAt": document["createdAt"],
+                    "updatedAt": document["updatedAt"],
                     "viewCount": document["viewCount"],
                     "likeCount": len(document["likedUsers"]),
                     "canDelete": user["_id"] == document["author"],
@@ -172,8 +172,8 @@ async def Category(request: Request, category: str):
                 "text": document["text"],
                 "authorName": user["username"],
                 "comments": comments,
-                "createdAt": datetime.now(),
-                "updatedAt": datetime.now(),
+                "createdAt": document["createdAt"],
+                "updatedAt": document["updatedAt"],
                 "viewCount": document["viewCount"],
                 "likeCount": len(document["likedUsers"]),
                 "canDelete": user["_id"] == document["author"],
