@@ -241,10 +241,13 @@ async def Category(request: Request, category: str):
                         "isAdmin": document["isAdmin"],
                     }
                 )
-    posts.sort(key=lambda x: x["updatedAt"])
+    posts.sort(key=lambda x: x["updatedAt"], reverse=True)
     for post in posts:
         post["createdAt"] = post["createdAt"].strftime("%Y-%m-%d")
         post["updatedAt"] = post["updatedAt"].strftime("%Y-%m-%d")
+        posts[posts.index(post)]["comments"].sort(
+            key=lambda x: x["createdAt"], reverse=True
+        )
         for comment in posts[posts.index(post)]['comments']:
             comment["createdAt"] = comment["createdAt"].strftime("%Y-%m-%d")
             for child in comment["children"]:
