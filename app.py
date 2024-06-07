@@ -4,10 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import os
 import time
-import pytz
-import asyncio
 import importlib
-from datetime import datetime
 
 from utilities.config import GetConfig
 from utilities.database.func import GetDatabase
@@ -20,7 +17,7 @@ app.add_middleware(
         "http://localhost",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://neulbom.wiki",
+        "https://neulbo.me",
     ],
     allow_credentials=True,
     allow_methods=["*"],

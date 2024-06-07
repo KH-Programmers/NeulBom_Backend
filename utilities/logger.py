@@ -1,4 +1,13 @@
+import pytz
 import logging
+from datetime import datetime
+from aiohttp import ClientSession
+from typing import List, Tuple
+
+
+from utilities.config import GetConfig
+
+config = GetConfig()
 
 levelTable = {
     "CRITICAL": 50,
@@ -40,3 +49,23 @@ def CreateLogger(name: str, level: int):
     logger.addHandler(streamHandler)
 
     return logger
+
+
+async def DIscordLog(logTitle: str, fields: List[Tuple[str, str]], color: int) -> None:
+    async with ClientSession() as session:
+        async with session.post(
+            url=config["LOG"]["DISCORD_WEBHOOK"],
+            json={
+                "embeds": [
+                    {
+                        "title": logTitle,
+                        "fields": [
+                            {"name": field[0], "value": field[1], "inline": False}
+                            for field in fields
+                        ],
+                        "color": color,
+                    }
+                ]
+            },
+        ):
+            pass

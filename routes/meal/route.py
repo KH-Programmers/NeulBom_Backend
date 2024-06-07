@@ -31,11 +31,14 @@ async def Index():
     for _ in range(2):
         dates.append(dates[-1] + timedelta(days=1))
     for date in dates:
-        foundMeal = [meal async for meal in database["meal"].find(
-            {
-                "date": date.strftime("%Y%m%d"),
-            }
-        )]
+        foundMeal = [
+            meal
+            async for meal in database["meal"].find(
+                {
+                    "date": date.strftime("%Y%m%d"),
+                }
+            )
+        ]
         if foundMeal:
             for meal in foundMeal:
                 meal.pop("_id")

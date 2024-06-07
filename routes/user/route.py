@@ -4,10 +4,12 @@ from fastapi.responses import JSONResponse
 import time
 import pytz
 import base64
+from aiohttp import ClientSession
 from datetime import datetime, timedelta
 
 from utilities.http import Post
 from utilities.config import GetConfig
+from utilities.logger import DiscordLog
 from utilities.database.func import GetDatabase
 from utilities.security import HashPassword, GenerateSalt
 
@@ -25,6 +27,48 @@ async def CaptchaVerify(token: str) -> bool:
         f"&secret={config['CAPTCHA']['HCAPTCHA_SECRET']}",
     )
     return response["success"]
+
+
+@router.get("/")
+async def GenerateUserInformation(request: Request) -> Response:
+    """
+    It's a route generating the user information(name, studentId)
+    Parameters:
+    - Access Token ( in header )
+
+    Returns:
+    - message: The message
+    - data: The data ( include barcode )
+    """
+    if (request.headers.get("Authorization") is None) or (
+        request.headers.get("Authorization") == ""
+    ):
+        return JSONResponse(
+            status_code=400, content={"message": "Token not found", "data": {}}
+        )
+    token = request.headers.get("Authorization").replace("Token ", "")
+    findToken = await database["token"].find_one({"accessToken": token})
+    if not findToken:
+        return JSONResponse(
+            status_code=401, content={"message": "Token not found", "data": {}}
+        )
+    user = await database["user"].find_one({"_id": findToken["userId"]})
+
+    if not user:
+        return JSONResponse(
+            status_code=401, content={"message": "User not found", "data": {}}
+        )
+    return JSONResponse(
+        {
+            "message": "Successfully generated user information",
+            "data": {
+                "name": user["username"],
+                "studentId": user["studentId"],
+                "isSuper": user["isSuper"],
+                "isTeacher": user["isTeacher"],
+            },
+        }
+    )
 
 
 @router.post("/login")
@@ -67,28 +111,15 @@ async def LogIn(request: Request) -> Response:
             }
         },
     )
-    tokens = [
-        base64.b64encode(GenerateSalt(64).encode("ascii")).decode("ascii")
-        for _ in range(2)
-    ]
+    accessToken = base64.b64encode(GenerateSalt(64).encode("ascii")).decode("ascii")
     await database["token"].insert_one(
         {
             "userId": findUser["_id"],
-            "accessToken": tokens[0],
-            "refreshToken": tokens[1],
-            "accessTokenExpiredAt": int(
+            "accessToken": accessToken,
+            "lastUsed": int(
                 time.mktime(
                     (
                         datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                        + timedelta(minutes=5)
-                    ).timetuple()
-                )
-            ),
-            "refreshTokenExpiredAt": int(
-                time.mktime(
-                    (
-                        datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                        + timedelta(days=8)
                     ).timetuple()
                 )
             ),
@@ -98,7 +129,7 @@ async def LogIn(request: Request) -> Response:
         status_code=200,
         content={
             "message": "Successfully logged in!",
-            "data": {"accessToken": tokens[0], "refreshToken": tokens[1]},
+            "data": {"accessToken": accessToken},
         },
     )
 
@@ -137,11 +168,21 @@ async def SignUp(request: Request) -> Response:
             "password": hashedPassword,
             "salt": salt,
             "isSuper": False,
+            "isTeacher": False,
             "lastLogin": datetime.now(tz=pytz.timezone("Asia/Seoul")).strftime(
                 "%Y-%m-%d %H:%M:%S"
             ),
             "graduated": False,
         }
+    )
+    await DiscordLog(
+        logTitle="📥 Sign Up",
+        fields=[
+            ("이름", userData["username"]),
+            ("학번", userData["studentId"]),
+            ("이메일", userData["email"]),
+        ],
+        color=1752220,
     )
     return JSONResponse(
         status_code=201,
@@ -162,13 +203,13 @@ async def LogOut(request: Request) -> Response:
     - message: The message
     - data: The data ( logout message )
     """
-    token = request.headers.get("Authorization")
+    token = request.headers.get("Authorization").replace("Token ", "")
     findToken = await database["token"].find_one({"accessToken": token})
     if not findToken:
         return JSONResponse(
             status_code=406, content={"message": "Token not found", "data": {}}
         )
-    await database["token"].delete_one({"_id": findToken["_id"]})
+    await database["token"].delete_one({"accessToken": token})
     return JSONResponse(
         status_code=200,
         content={"message": "Successfully logged out!", "data": {}},
@@ -192,137 +233,41 @@ async def Authentication(request: Request) -> Response:
         return JSONResponse(
             status_code=401, content={"message": "Token not found", "data": {}}
         )
-    if findToken["accessTokenExpiredAt"] < int(
+    if findToken["lastUsed"] < int(
         time.mktime(
-            (datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))).timetuple()
+            (
+                datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
+                - timedelta(days=30)
+            ).timetuple()
         )
     ):
+        await database["token"].delete_one({"accessToken": token})
         return JSONResponse(
             status_code=406, content={"message": "Token expired", "data": {}}
         )
-    return JSONResponse(
-        status_code=200,
-        content={"message": "Token valid", "data": {}},
-    )
-
-
-@router.post("/refresh")
-async def RefreshToken(request: Request) -> Response:
-    """
-    It's a route refreshing the token
-    Parameters:
-    - Refresh Token ( in header )
-
-    Returns:
-    - message: The message
-    - data: The data ( include accessToken, refreshToken )
-    """
-    token = request.headers.get("Authorization").replace("Token ", "")
-    findToken = await database["token"].find_one({"refreshToken": token})
-    if not findToken:
-        return JSONResponse(
-            status_code=401, content={"message": "Token not found", "data": {}}
-        )
-    if findToken["refreshTokenExpiredAt"] < int(
-        time.mktime(
-            (datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))).timetuple()
-        )
-    ):
-        await database["token"].delete_one({"_id": findToken["_id"]})
-        return JSONResponse(
-            status_code=406, content={"message": "Token expired", "data": {}}
-        )
-    tokens = [
-        base64.b64encode(GenerateSalt(64).encode("ascii")).decode("ascii")
-        for _ in range(2)
-    ]
+    user = await database["user"].find_one({"_id": findToken["userId"]})
     await database["token"].update_one(
-        {"_id": findToken["_id"]},
+        {
+            "accessToken": token,
+        },
         {
             "$set": {
-                "accessToken": tokens[0],
-                "refreshToken": tokens[1],
-                "accessTokenExpiredAt": int(
+                "lastUsed": int(
                     time.mktime(
                         (
                             datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                            + timedelta(minutes=5)
                         ).timetuple()
                     )
-                ),
-                "refreshTokenExpiredAt": int(
-                    time.mktime(
-                        (
-                            datetime.now().replace(tzinfo=pytz.timezone("Asia/Seoul"))
-                            + timedelta(days=8)
-                        ).timetuple()
-                    )
-                ),
+                )
             }
         },
     )
     return JSONResponse(
         status_code=200,
         content={
-            "message": "Token refreshed!",
-            "data": {"accessToken": tokens[0], "refreshToken": tokens[1]},
+            "message": "Token valid",
+            "data": {
+                "isSuper": user["isSuper"],
+            },
         },
     )
-
-
-@router.get("/")
-async def GenerateUserInformation(request: Request) -> Response:
-    """
-    It's a route generating the user information(name, studentId, barcode)
-    Parameters:
-    - Access Token ( in header )
-
-    Returns:
-    - message: The message
-    - data: The data ( include barcode )
-    """
-    if (request.headers.get("Authorization") is None) or (
-        request.headers.get("Authorization") == ""
-    ):
-        return JSONResponse(
-            status_code=400, content={"message": "Token not found", "data": {}}
-        )
-    token = request.headers.get("Authorization").replace("Token ", "")
-    findToken = await database["token"].find_one({"accessToken": token})
-    if not findToken:
-        return JSONResponse(
-            status_code=401, content={"message": "Token not found", "data": {}}
-        )
-    user = await database["user"].find_one({"_id": findToken["userId"]})
-    return JSONResponse(
-        {
-            "message": "Successfully generated user information",
-            "data": {
-                "name": user["username"],
-                "studentId": user["studentId"],
-            },
-        }
-    )
-
-
-@router.get("/isValidation")
-async def IsValidation(request: Request) -> Response:
-    """
-    It's a route checking the validity of token
-    Parameters:
-    - Access Token ( in header )
-    """
-    if (request.headers.get("Authorization") is None) or (
-        request.headers.get("Authorization") == ""
-    ):
-        return JSONResponse(
-            status_code=400, content={"message": "Token not found", "data": {}}
-        )
-    token = request.headers.get("Authorization").replace("Token ", "")
-    findToken = await database["token"].find_one({"accessToken": token})
-    if not findToken:
-        return JSONResponse(
-            status_code=401, content={"message": "Token not found", "data": {}}
-        )
-    user = await database["user"].find_one({"_id": findToken["userId"]})
-    return JSONResponse({"isSuper": user["isSuper"]})
