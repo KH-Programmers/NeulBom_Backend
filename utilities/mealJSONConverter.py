@@ -1,66 +1,63 @@
 import json
 from collections import OrderedDict
 
-def ConvertJSON(aJSON):
+def ConvertJSON(mealObject: dict) -> dict:
     """
     !ISSUE!; 인코딩 상태에 문제 있을 수 있음, 한번에 하나씩만 처리함
-    Parameters : JSON file
-    return : JSON file
+    Parameters : JSON menuWithAllergy
+    return : JSON menuWithAllergy
     """
-    anOutputFile = OrderedDict()
+    convertedMealObject = dict()
 
-    if aJSON["MMEAL_SC_NM"] == "중식":
-        anOutputFile["isLunch"] = True
+    if mealObject["MMEAL_SC_NM"] == "중식":
+        convertedMealObject["isLunch"] = True
     else :
-        anOutputFile["isLunch"] = False
+        convertedMealObject["isLunch"] = False
     
-    anOutputFile["date"] = aJSON["MLSV_YMD"]
+    convertedMealObject["date"] = mealObject["MLSV_YMD"]
     
-    strings = aJSON["DDISH_NM"].split('<br/>')
+    menus = mealObject["DDISH_NM"].split('<br/>')
 
-    smallJSONList = list()
+    menuJSONList = list()
 
-    for string in strings:
-        string = string.replace('*', '')
-        file = OrderedDict()
-        file["name"] = string.split(' ', 1)[0].replace('1', '').replace('(완)', '')
+    for menu in menus:
+        menu = menu.replace('*', '')
+        menuWithAllergy = dict()
+        menuWithAllergy["name"] = menu.split(' ', 1)[0].replace('1', '').replace('(완)', '')
 
         allergyList = list()
 
-        if(string.find('(')):
-            string = string.replace('(', '')
-            string = string.replace(')', '')
-            string = string.split(' ')[1]
-            allergyList = string.split('.')
+        if(menu.find('(')):
+            menu = menu.replace('(', '')
+            menu = menu.replace(')', '')
+            menu = menu.split(' ')[1]
+            allergyList = menu.split('.')
 
         i = 0
 
-        for text in allergyList:
+        for _ in allergyList:
             try:
                 allergyList[i] = int(allergyList[i])
             except:
                 allergyList = list()
             i += 1
 
-        file["allergies"] = allergyList
-        smallJSONList.append(file)
-    anOutputFile["menu"] = smallJSONList
+        menuWithAllergy["allergies"] = allergyList
+        menuJSONList.append(menuWithAllergy)
+    
+    convertedMealObject["menu"] = menuJSONList
 
-    return anOutputFile
+    return convertedMealObject
 
-def BatchConvertJSON(aJSON):
+def BatchConvertJSON(mealObject: list) -> list:
     """
     JSON List를 입력으로 받으면 전부 변환하여 바꿔줌
     Parameter : JSON List
     return JSON List
     """
-    anOutputFile = OrderedDict()
+    mealJSONList = list()
 
-    smallJSONList = list()
+    for JSON in mealObject:
+        mealJSONList.append(ConvertJSON(JSON))
 
-    for JSON in aJSON:
-        smallJSONList.append(ConvertJSON(JSON))
-    
-    anOutputFile = smallJSONList
-
-    return anOutputFile
+    return mealJSONList
