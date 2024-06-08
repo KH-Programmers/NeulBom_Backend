@@ -3,7 +3,7 @@ from barcode.writer import SVGWriter
 import barcode
 
 
-async def GenerateBarcode(stringInput):
+async def GenerateBarcode(stringInput: str) -> str:
     """
     Parameters : stringInput
     return : anImage - File-like SVG image Object
