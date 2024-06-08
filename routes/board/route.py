@@ -366,7 +366,41 @@ async def Article(request: Request, id: str):
             "title": post["title"],
             "text": post["text"],
             "authorName": author["username"],
-            "comments": [],
+            "comments": [
+                {
+                    "id": str(comment["_id"]),
+                    "content": str(comment["text"]),
+                    "authorName": (
+                        await database["user"].find_one({"_id": comment["author"]})
+                    )["username"],
+                    "createdAt": comment["createdAt"],
+                    "isAnonymous": comment["isAnonymous"],
+                    "isAdmin": comment["isAdmin"],
+                    "canDelete": user["_id"] == comment["author"],
+                    "children": [
+                        {
+                            "id": str(child["_id"]),
+                            "content": str(child["text"]),
+                            "authorName": (
+                                await database["user"].find_one(
+                                    {"_id": child["author"]}
+                                )
+                            )["username"],
+                            "createdAt": child["createdAt"],
+                            "isAnonymous": child["isAnonymous"],
+                            "isAdmin": child["isAdmin"],
+                            "canDelete": user["_id"] == child["author"],
+                            "children": [],
+                        }
+                        async for child in database["comment"].find(
+                            {"_id": {"$in": comment["children"]}}
+                        )
+                    ],
+                }
+                async for comment in database["comment"].find(
+                    {"article": post["_id"], "viewable": True}
+                )
+            ],
             "updatedAt": post["updatedAt"].strftime("%Y-%m-%d"),
             "viewCount": post["viewCount"],
             "likeCount": len(post["likedUsers"]),
