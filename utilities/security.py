@@ -25,3 +25,14 @@ def HashPassword(password: str, salt: str) -> bytes:
     :return: The hashed password
     """
     return scrypt.hash(password, salt)
+
+def GenerateAuthCode() -> str:
+    """
+    Generates a random 5 bytes Authorize Code
+
+    :return: Authorize Code
+    """
+    return "".join(
+        random.choice(string.ascii_uppercase)
+        for _ in range(5)
+    )
