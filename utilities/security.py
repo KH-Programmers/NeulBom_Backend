@@ -32,7 +32,15 @@ def GenerateAuthCode() -> str:
 
     :return: Authorize Code
     """
-    return "".join(
-        random.choice(string.ascii_uppercase)
-        for _ in range(5)
-    )
+
+    database = GetDatabase(config["DATABASE"]["URI"])
+
+    authCode = str()
+    while True:
+        authCode = "".join(
+            random.choice(string.ascii_uppercase)
+            for _ in range(5)
+        )
+        if database["pending"].find_one({"authCode" : authCode}) is None: break
+
+    return authCode
