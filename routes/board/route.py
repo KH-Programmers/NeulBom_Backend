@@ -358,6 +358,50 @@ async def Article(request: Request, id: str):
         )
         for categoryId in categories
     ]
+    comments = []
+    async for comment in database["comment"].find(
+        {"article": post["_id"], "viewable": True}
+    ):
+        children = []
+        async for child in database["comment"].find(
+            {"_id": {"$in": comment["children"]}}
+        ):
+            children.append(
+                {
+                    "id": str(child["_id"]),
+                    "content": str(child["text"]),
+                    "authorName": (
+                        await database["user"].find_one({"_id": child["author"]})
+                    )["username"],
+                    "createdAt": child["createdAt"],
+                    "isAnonymous": child["isAnonymous"],
+                    "isAdmin": child["isAdmin"],
+                    "canDelete": user["_id"] == child["author"],
+                    "children": [],
+                }
+            )
+        comments.append(
+            {
+                "id": str(comment["_id"]),
+                "content": str(comment["text"]),
+                "authorName": (
+                    await database["user"].find_one({"_id": comment["author"]})
+                )["username"],
+                "createdAt": comment["createdAt"],
+                "isAnonymous": comment["isAnonymous"],
+                "isAdmin": comment["isAdmin"],
+                "canDelete": user["_id"] == comment["author"],
+                "children": children,
+            }
+        )
+
+    comments.sort(key=lambda x: x["createdAt"], reverse=True)
+    for comment in comments:
+        comment["createdAt"] = comment["createdAt"].strftime("%Y-%m-%d")
+        if len(comment["children"]) > 0:
+            comment["children"].sort(key=lambda x: x["createdAt"], reverse=True)
+        for child in comment["children"]:
+            child["createdAt"] = child["createdAt"].strftime("%Y-%m-%d")
 
     return JSONResponse(
         {
@@ -366,41 +410,7 @@ async def Article(request: Request, id: str):
             "title": post["title"],
             "text": post["text"],
             "authorName": author["username"],
-            "comments": [
-                {
-                    "id": str(comment["_id"]),
-                    "content": str(comment["text"]),
-                    "authorName": (
-                        await database["user"].find_one({"_id": comment["author"]})
-                    )["username"],
-                    "createdAt": comment["createdAt"],
-                    "isAnonymous": comment["isAnonymous"],
-                    "isAdmin": comment["isAdmin"],
-                    "canDelete": user["_id"] == comment["author"],
-                    "children": [
-                        {
-                            "id": str(child["_id"]),
-                            "content": str(child["text"]),
-                            "authorName": (
-                                await database["user"].find_one(
-                                    {"_id": child["author"]}
-                                )
-                            )["username"],
-                            "createdAt": child["createdAt"],
-                            "isAnonymous": child["isAnonymous"],
-                            "isAdmin": child["isAdmin"],
-                            "canDelete": user["_id"] == child["author"],
-                            "children": [],
-                        }
-                        async for child in database["comment"].find(
-                            {"_id": {"$in": comment["children"]}}
-                        )
-                    ],
-                }
-                async for comment in database["comment"].find(
-                    {"article": post["_id"], "viewable": True}
-                )
-            ],
+            "comments": comments,
             "updatedAt": post["updatedAt"].strftime("%Y-%m-%d"),
             "viewCount": post["viewCount"],
             "likeCount": len(post["likedUsers"]),
