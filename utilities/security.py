@@ -26,7 +26,7 @@ def HashPassword(password: str, salt: str) -> bytes:
     """
     return scrypt.hash(password, salt)
 
-def GenerateAuthCode() -> str:
+async def GenerateAuthCode() -> str:
     """
     Generates a random 5 bytes Authorize Code
 
@@ -41,6 +41,6 @@ def GenerateAuthCode() -> str:
             random.choice(string.ascii_uppercase)
             for _ in range(5)
         )
-        if database["pending"].find_one({"authCode" : authCode}) is None: break
+        if await database["pending"].find_one({"authCode" : authCode}) is None: break
 
     return authCode
