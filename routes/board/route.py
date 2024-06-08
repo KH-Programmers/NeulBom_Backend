@@ -126,12 +126,10 @@ async def Category(request: Request, category: str):
             posts[posts.index(post)]["comments"].sort(
                 key=lambda x: x["createdAt"], reverse=True
             )
-            for comment in posts[posts.index(post)]['comments']:
+            for comment in posts[posts.index(post)]["comments"]:
                 comment["createdAt"] = comment["createdAt"].strftime("%Y-%m-%d")
                 for child in comment["children"]:
                     child["createdAt"] = child["createdAt"].strftime("%Y-%m-%d")
-
-        print(posts)
 
         return JSONResponse(posts, status_code=200)
     board = await database["board"].find_one({"id": category})
@@ -260,7 +258,7 @@ async def Category(request: Request, category: str):
         posts[posts.index(post)]["comments"].sort(
             key=lambda x: x["createdAt"], reverse=True
         )
-        for comment in posts[posts.index(post)]['comments']:
+        for comment in posts[posts.index(post)]["comments"]:
             comment["createdAt"] = comment["createdAt"].strftime("%Y-%m-%d")
             for child in comment["children"]:
                 child["createdAt"] = child["createdAt"].strftime("%Y-%m-%d")
