@@ -92,7 +92,7 @@ async def Category(request: Request, category: str):
                             "canDelete": user["_id"] == child["author"],
                             "children": [],
                         }
-                        for child in await database["comment"].find(
+                        async for child in database["comment"].find(
                             {"_id": {"$in": comment["children"]}}
                         )
                     ],
@@ -130,6 +130,8 @@ async def Category(request: Request, category: str):
                 comment["createdAt"] = comment["createdAt"].strftime("%Y-%m-%d")
                 for child in comment["children"]:
                     child["createdAt"] = child["createdAt"].strftime("%Y-%m-%d")
+
+        print(posts)
 
         return JSONResponse(posts, status_code=200)
     board = await database["board"].find_one({"id": category})
