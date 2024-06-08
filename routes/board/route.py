@@ -165,7 +165,7 @@ async def Category(request: Request, category: str):
                         "canDelete": user["_id"] == child["author"],
                         "children": [],
                     }
-                    for child in await database["comment"].find(
+                    async for child in database["comment"].find(
                         {"_id": {"$in": comment["children"]}}
                     )
                 ],
@@ -225,7 +225,7 @@ async def Category(request: Request, category: str):
                                 "canDelete": user["_id"] == child["author"],
                                 "children": [],
                             }
-                            for child in await database["comment"].find(
+                            async for child in database["comment"].find(
                                 {"_id": {"$in": comment["children"]}}
                             )
                         ],
