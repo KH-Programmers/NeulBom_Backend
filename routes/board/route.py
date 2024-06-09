@@ -143,9 +143,13 @@ async def Category(request: Request, category: str):
                 key=lambda x: x["createdAt"], reverse=True
             )
             for comment in posts[posts.index(post)]["comments"]:
-                comment["createdAt"] = comment["createdAt"].strftime("%Y-%m-%d")
+                comment["createdAt"] = datetime.strptime(
+                    comment["createdAt"], "%Y-%m-%d %H:%M:%S"
+                ).strftime("%Y-%m-%d")
                 for child in comment["children"]:
-                    child["createdAt"] = child["createdAt"].strftime("%Y-%m-%d")
+                    child["createdAt"] = datetime.strptime(
+                        child["createdAt"], "%Y-%m-%d %H:%M:%S"
+                    ).strftime("%Y-%m-%d")
 
         return JSONResponse(posts, status_code=200)
     board = await database["board"].find_one({"id": category})
