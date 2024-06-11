@@ -62,117 +62,143 @@ async def Category(request: Request, category: str):
     if user is None:
         return JSONResponse({"message": "Invalid User"}, status_code=401)
 
-    if category == "all":
-        posts = []
-        async for document in database["post"].find({"viewable": True}):
-            user = await database["user"].find_one({"_id": document["author"]})
-            comments = [
-                {
-                    "id": str(comment["_id"]),
-                    "content": str(comment["text"]),
-                    "authorName": (
-                        await database["user"].find_one({"_id": comment["author"]})
-                    )["username"],
-                    "createdAt": comment["createdAt"],
-                    "isAnonymous": comment["isAnonymous"],
-                    "isAdmin": comment["isAdmin"],
-                    "canDelete": user["_id"] == comment["author"],
-                    "children": [
+    posts = []
+
+    if category != "all":
+        board = await database["board"].find_one({"id": category})
+        if board is None:
+            return JSONResponse({"message": "Invalid Category"}, status_code=404)
+        if board.get("children") is not None:
+            async for childBoard in database["board"].find(
+                {"id": {"$in": list(map(lambda x: x["id"], board["children"]))}}
+            ):
+                async for document in database["post"].find(
+                    {"category": childBoard["id"], "viewable": True}
+                ):
+                    user = await database["user"].find_one({"_id": document["author"]})
+                    comments = [
                         {
-                            "id": str(child["_id"]),
-                            "content": str(child["text"]),
+                            "id": str(comment["_id"]),
+                            "content": (
+                                str(comment["text"])
+                                if comment["viewable"]
+                                else "삭제된 댓글입니다."
+                            ),
                             "authorName": (
                                 await database["user"].find_one(
-                                    {"_id": child["author"]}
+                                    {"_id": comment["author"]}
                                 )
                             )["username"],
-                            "createdAt": child["createdAt"],
-                            "isAnonymous": child["isAnonymous"],
-                            "isAdmin": child["isAdmin"],
-                            "canDelete": user["_id"] == child["author"],
-                            "children": [],
+                            "createdAt": comment["createdAt"],
+                            "isAnonymous": comment["isAnonymous"],
+                            "isAdmin": comment["isAdmin"],
+                            "canDelete": (
+                                user["_id"] == comment["author"]
+                                if comment["viewable"]
+                                else False
+                            ),
+                            "children": [
+                                {
+                                    "id": str(child["_id"]),
+                                    "content": (
+                                        str(child["text"])
+                                        if child["viewable"]
+                                        else "삭제된 댓글입니다."
+                                    ),
+                                    "authorName": (
+                                        await database["user"].find_one(
+                                            {"_id": child["author"]}
+                                        )
+                                    )["username"],
+                                    "createdAt": child["createdAt"],
+                                    "isAnonymous": child["isAnonymous"],
+                                    "isAdmin": child["isAdmin"],
+                                    "canDelete": (
+                                        user["_id"] == child["author"]
+                                        if child["viewable"]
+                                        else False
+                                    ),
+                                    "children": [],
+                                }
+                                async for child in database["comment"].find(
+                                    {"_id": {"$in": comment["children"]}}
+                                )
+                            ],
                         }
-                        for child in await database["comment"].find(
-                            {"_id": {"$in": comment["children"]}}
+                        async for comment in database["comment"].find(
+                            {
+                                "article": document["_id"],
+                                "children": {"$ne": []},
+                            }
                         )
-                    ],
-                }
-                async for comment in database["comment"].find(
-                    {"article": document["_id"], "viewable": True}
-                )
-            ]
-            posts.append(
-                {
-                    "id": str(document["_id"]),
-                    "category": document["category"],
-                    "title": document["title"],
-                    "text": document["text"],
-                    "authorName": user["username"],
-                    "comments": comments,
-                    "createdAt": document["createdAt"],
-                    "updatedAt": document["updatedAt"],
-                    "viewCount": document["viewCount"],
-                    "likeCount": len(document["likedUsers"]),
-                    "canDelete": user["_id"] == document["author"],
-                    "isAnonymous": document["isAnonymous"],
-                    "isAdmin": document["isAdmin"],
-                }
-            )
+                    ]
+                    posts.append(
+                        {
+                            "id": str(document["_id"]),
+                            "category": document["category"],
+                            "title": document["title"],
+                            "text": document["text"],
+                            "authorName": user["username"],
+                            "comments": comments,
+                            "createdAt": document["createdAt"],
+                            "updatedAt": document["updatedAt"],
+                            "viewCount": document["viewCount"],
+                            "likeCount": len(document["likedUsers"]),
+                            "canDelete": user["_id"] == document["author"],
+                            "isAnonymous": document["isAnonymous"],
+                            "isAdmin": document["isAdmin"],
+                        }
+                    )
 
-        posts.sort(key=lambda x: x["updatedAt"], reverse=True)
-        for post in posts:
-            post["createdAt"] = post["createdAt"].strftime("%Y-%m-%d")
-            post["updatedAt"] = post["updatedAt"].strftime("%Y-%m-%d")
-            posts[posts.index(post)]["comments"].sort(
-                key=lambda x: x["createdAt"], reverse=True
-            )
-            for comment in posts[posts.index(post)]['comments']:
-                comment["createdAt"] = comment["createdAt"].strftime("%Y-%m-%d")
-                for child in comment["children"]:
-                    child["createdAt"] = child["createdAt"].strftime("%Y-%m-%d")
-
-        return JSONResponse(posts, status_code=200)
-    board = await database["board"].find_one({"id": category})
-    if board is None:
-        return JSONResponse({"message": "Invalid Category"}, status_code=404)
-
-    posts = []
-    async for document in database["post"].find(
-        {"category": category, "viewable": True}
-    ):
+    query = {"viewable": True}
+    if category != "all":
+        query["category"] = category
+    async for document in database["post"].find(query):
         user = await database["user"].find_one({"_id": document["author"]})
         comments = [
             {
                 "id": str(comment["_id"]),
-                "content": str(comment["text"]),
+                "content": (
+                    str(comment["text"])
+                    if comment["viewable"]
+                    else "삭제된 댓글입니다."
+                ),
                 "authorName": (
                     await database["user"].find_one({"_id": comment["author"]})
                 )["username"],
                 "createdAt": comment["createdAt"],
                 "isAnonymous": comment["isAnonymous"],
                 "isAdmin": comment["isAdmin"],
-                "canDelete": user["_id"] == comment["author"],
+                "canDelete": (
+                    user["_id"] == comment["author"] if comment["viewable"] else False
+                ),
                 "children": [
                     {
                         "id": str(child["_id"]),
-                        "content": str(child["text"]),
+                        "content": (
+                            str(child["text"])
+                            if child["viewable"]
+                            else "삭제된 댓글입니다."
+                        ),
                         "authorName": (
                             await database["user"].find_one({"_id": child["author"]})
                         )["username"],
-                        "createdAt": child["createdAt"].strftime("%Y-%m-%d"),
+                        "createdAt": child["createdAt"],
                         "isAnonymous": child["isAnonymous"],
                         "isAdmin": child["isAdmin"],
-                        "canDelete": user["_id"] == child["author"],
+                        "canDelete": (
+                            user["_id"] == child["author"]
+                            if child["viewable"]
+                            else False
+                        ),
                         "children": [],
                     }
-                    for child in await database["comment"].find(
+                    async for child in database["comment"].find(
                         {"_id": {"$in": comment["children"]}}
                     )
                 ],
             }
-            async for comment in database["comment"].find(
-                {"article": document["_id"], "viewable": True}
-            )
+            async for comment in database["comment"].find({"article": document["_id"]})
         ]
         posts.append(
             {
@@ -191,66 +217,7 @@ async def Category(request: Request, category: str):
                 "isAdmin": document["isAdmin"],
             }
         )
-    if board.get("children") is not None:
-        async for childBoard in database["board"].find(
-            {"id": {"$in": list(map(lambda x: x["id"], board["children"]))}}
-        ):
-            async for document in database["post"].find(
-                {"category": childBoard["id"], "viewable": True}
-            ):
-                user = await database["user"].find_one({"_id": document["author"]})
-                comments = [
-                    {
-                        "id": str(comment["_id"]),
-                        "content": str(comment["text"]),
-                        "authorName": (
-                            await database["user"].find_one({"_id": comment["author"]})
-                        )["username"],
-                        "createdAt": comment["createdAt"],
-                        "isAnonymous": comment["isAnonymous"],
-                        "isAdmin": comment["isAdmin"],
-                        "canDelete": user["_id"] == comment["author"],
-                        "children": [
-                            {
-                                "id": str(child["_id"]),
-                                "content": str(child["text"]),
-                                "authorName": (
-                                    await database["user"].find_one(
-                                        {"_id": child["author"]}
-                                    )
-                                )["username"],
-                                "createdAt": child["createdAt"],
-                                "isAnonymous": child["isAnonymous"],
-                                "isAdmin": child["isAdmin"],
-                                "canDelete": user["_id"] == child["author"],
-                                "children": [],
-                            }
-                            for child in await database["comment"].find(
-                                {"_id": {"$in": comment["children"]}}
-                            )
-                        ],
-                    }
-                    async for comment in database["comment"].find(
-                        {"article": document["_id"], "viewable": True}
-                    )
-                ]
-                posts.append(
-                    {
-                        "id": str(document["_id"]),
-                        "category": document["category"],
-                        "title": document["title"],
-                        "text": document["text"],
-                        "authorName": user["username"],
-                        "comments": comments,
-                        "createdAt": document["createdAt"],
-                        "updatedAt": document["updatedAt"],
-                        "viewCount": document["viewCount"],
-                        "likeCount": len(document["likedUsers"]),
-                        "canDelete": user["_id"] == document["author"],
-                        "isAnonymous": document["isAnonymous"],
-                        "isAdmin": document["isAdmin"],
-                    }
-                )
+
     posts.sort(key=lambda x: x["updatedAt"], reverse=True)
     for post in posts:
         post["createdAt"] = post["createdAt"].strftime("%Y-%m-%d")
@@ -258,10 +225,14 @@ async def Category(request: Request, category: str):
         posts[posts.index(post)]["comments"].sort(
             key=lambda x: x["createdAt"], reverse=True
         )
-        for comment in posts[posts.index(post)]['comments']:
-            comment["createdAt"] = comment["createdAt"].strftime("%Y-%m-%d")
+        for comment in posts[posts.index(post)]["comments"]:
+            comment["createdAt"] = datetime.strptime(
+                comment["createdAt"], "%Y-%m-%d %H:%M:%S"
+            ).strftime("%Y-%m-%d")
             for child in comment["children"]:
-                child["createdAt"] = child["createdAt"].strftime("%Y-%m-%d")
+                child["createdAt"] = datetime.strptime(
+                    child["createdAt"], "%Y-%m-%d %H:%M:%S"
+                ).strftime("%Y-%m-%d")
 
     return JSONResponse(posts, status_code=200)
 
@@ -358,6 +329,66 @@ async def Article(request: Request, id: str):
         )
         for categoryId in categories
     ]
+    comments = [
+        {
+            "id": str(comment["_id"]),
+            "content": (
+                str(comment["text"]) if comment["viewable"] else "삭제된 댓글입니다."
+            ),
+            "authorName": (await database["user"].find_one({"_id": comment["author"]}))[
+                "username"
+            ],
+            "createdAt": comment["createdAt"],
+            "isAnonymous": comment["isAnonymous"],
+            "isAdmin": comment["isAdmin"],
+            "canDelete": (
+                user["_id"] == comment["author"] if comment["viewable"] else False
+            ),
+            "children": [
+                {
+                    "id": str(child["_id"]),
+                    "content": (
+                        str(child["text"])
+                        if child["viewable"]
+                        else "삭제된 댓글입니다."
+                    ),
+                    "authorName": (
+                        await database["user"].find_one({"_id": child["author"]})
+                    )["username"],
+                    "createdAt": child["createdAt"],
+                    "isAnonymous": child["isAnonymous"],
+                    "isAdmin": child["isAdmin"],
+                    "canDelete": (
+                        user["_id"] == child["author"] if child["viewable"] else False
+                    ),
+                    "children": [],
+                }
+                async for child in database["comment"].find(
+                    {"_id": {"$in": comment["children"]}}
+                )
+            ],
+        }
+        async for comment in database["comment"].find({"article": post["_id"]})
+    ]
+
+    comments.sort(key=lambda x: x["createdAt"], reverse=True)
+    children = []
+    for comment in comments:
+        comment["createdAt"] = datetime.strptime(
+            comment["createdAt"], "%Y-%m-%d %H:%M:%S"
+        ).strftime("%Y-%m-%d")
+        if len(comment["children"]) > 0:
+            for child in comment["children"]:
+                children.append(child["id"])
+            comment["children"].sort(key=lambda x: x["createdAt"], reverse=True)
+        for child in comment["children"]:
+            child["createdAt"] = datetime.strptime(
+                child["createdAt"], "%Y-%m-%d %H:%M:%S"
+            ).strftime("%Y-%m-%d")
+
+    for comment in comments:
+        if comment["id"] in children:
+            comments.remove(comment)
 
     return JSONResponse(
         {
@@ -366,7 +397,7 @@ async def Article(request: Request, id: str):
             "title": post["title"],
             "text": post["text"],
             "authorName": author["username"],
-            "comments": [],
+            "comments": comments,
             "updatedAt": post["updatedAt"].strftime("%Y-%m-%d"),
             "viewCount": post["viewCount"],
             "likeCount": len(post["likedUsers"]),
@@ -504,12 +535,12 @@ async def DislikeArticle(request: Request, id: str):
 
 class Comment(BaseModel):
     text: str
-    parent: Optional[str] = None
+    parentCommentId: Optional[str] = None
     isAnonymous: bool = False
     isAdmin: bool = False
 
 
-@router.post("/article/{id}/comments")
+@router.post("/article/{id}/comments/")
 async def WriteComment(request: Request, id: str, comment: Comment):
     token = request.headers.get("Authorization").replace("Token ", "")
     user = await database["user"].find_one(
@@ -525,27 +556,60 @@ async def WriteComment(request: Request, id: str, comment: Comment):
     if not post["viewable"]:
         return JSONResponse({"message": "Invalid Post"}, status_code=404)
 
-    await database["comment"].insert_one(
+    createdComment = await database["comment"].insert_one(
         {
             "article": post["_id"],
             "author": user["_id"],
-            "text": post.text,
+            "text": comment.text,
             "children": [],
-            "createdAt": datetime.now().replace(tzinfo=timezone("Asia/Seoul")),
+            "createdAt": datetime.now()
+            .replace(tzinfo=timezone("Asia/Seoul"))
+            .strftime("%Y-%m-%d %H:%M:%S"),
             "viewable": True,
-            "isAnonymous": post.isAnonymous,
-            "isAdmin": post.isAdmin,
+            "isAnonymous": comment.isAnonymous,
+            "isAdmin": comment.isAdmin,
         }
     )
 
-    if comment.parent is not None:
+    if comment.parentCommentId is not None:
         await database["comment"].update_one(
             {
-                "_id": ObjectId(comment.parent),
+                "_id": ObjectId(comment.parentCommentId),
             },
             {
-                "$push": {"children": ObjectId(id)},
+                "$push": {"children": createdComment.inserted_id},
             },
         )
 
     return JSONResponse({"status": "success"}, status_code=201)
+
+
+@router.delete("/article/{id}/comments/{commentId}")
+async def DeleteComment(request: Request, id: str, commentId: str):
+    token = request.headers.get("Authorization").replace("Token ", "")
+    user = await database["user"].find_one(
+        {"_id": (await database["token"].find_one({"accessToken": token}))["userId"]}
+    )
+    if user is None:
+        return JSONResponse({"message": "Invalid User"}, status_code=401)
+
+    post = await database["post"].find_one({"_id": ObjectId(id)})
+    if post is None:
+        return JSONResponse({"message": "Invalid Post"}, status_code=404)
+
+    comment = await database["comment"].find_one({"_id": ObjectId(commentId)})
+    if comment is None:
+        return JSONResponse({"message": "Invalid Comment"}, status_code=404)
+
+    if user["_id"] != comment["author"]:
+        return JSONResponse({"message": "Invalid User"}, status_code=301)
+
+    await database["comment"].update_one(
+        {
+            "_id": ObjectId(commentId),
+        },
+        {
+            "$set": {"viewable": False},
+        },
+    )
+    return JSONResponse({"status": "success"}, status_code=204)
