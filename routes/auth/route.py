@@ -70,7 +70,7 @@ async def AuthPendingUser(request: Request, userId):
 
     await database["user"].insert_one(findUser)
 
-    del findUser
+    await database["pending"].delete_one({"userId": userId})
 
     return JSONResponse(
         status_code=200,
