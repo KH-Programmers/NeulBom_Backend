@@ -310,9 +310,11 @@ async def Article(request: Request, id: str):
 
     while True:
         board = await database["board"].find_one(
-            {"children": {"$in": [categories[-1]]}}
+            {
+                "children": {"$elemMatch": {"id": categories[-1]}},
+            }
         )
-        if board is None or board.get("parent") is None:
+        if board is None:
             categories.append("all")
             break
         categories.append(board["id"])
