@@ -10,3 +10,4 @@ pick
 pyjwt
 python-barcode
 pillow
+aiosmtplib

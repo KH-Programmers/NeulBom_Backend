@@ -8,6 +8,7 @@ test.py
 temp.txt
 utilities\login.py
 settings.json
+launch.json
 testIgnore
 
 # C extensions
