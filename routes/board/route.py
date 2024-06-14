@@ -11,7 +11,7 @@ from utilities.config import GetConfig
 from utilities.logger import DiscordLog
 from utilities.database.func import GetDatabase
 from utilities.userUtils import GetUserFromRequest
-from utilities.postUtils import PickPopulars, GetCategory
+from utilities.postUtils import *
 
 router = APIRouter()
 
@@ -250,7 +250,7 @@ async def GetAllPopular(request:Request):
         return posts
 
     posts = PickPopulars(posts)
-
+    SortPost(posts)
     return JSONResponse(posts, status_code=200)
 
 
@@ -265,7 +265,7 @@ async def GetCategoryPopular(request:Request, category:str):
         return posts
 
     posts = PickPopulars(posts)
-
+    SortPost(posts)
     return JSONResponse(posts, status_code=200)
 
 

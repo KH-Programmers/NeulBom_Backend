@@ -137,7 +137,7 @@ async def GetCategory(category:str="all", uid:Optional[str]=None, getchildren:bo
     return posts
 
 
-def PickPopulars(posts:Iterable[PostStruct]) -> List[PostStruct]:
+def PickPopulars(posts:Iterable[PostStruct],/) -> List[PostStruct]:
     now = datetime.now().replace(tzinfo=TIMEZONE)
 
     if (
@@ -166,9 +166,27 @@ def PickPopulars(posts:Iterable[PostStruct]) -> List[PostStruct]:
     ]
 
 
+def SortPost(posts:List[PostStruct],/):
+    '''
+    Args:
+        posts: List which has to sort.
+    Returns:
+        None
+    '''
+    posts.sort(key=lambda x: x["updatedAt"], reverse=True)
+    for post in posts:
+        post["createdAt"] = post["createdAt"].strftime("%Y-%m-%d")
+        post["updatedAt"] = post["updatedAt"].strftime("%Y-%m-%d")
+        post["comments"].sort(key=lambda x: x["createdAt"], reverse=True)
+        for comment in post["comments"]:
+            comment["createdAt"] = comment["createdAt"][:10]
+            for child in comment["children"]:
+                child["createdAt"] = child["createdAt"][:10]
+
+
 #endregion functions
 
 
 __all__ = [
-    "GetCategory", "PickPopulars"
+    "GetCategory", "PickPopulars", "SortPost"
 ]
