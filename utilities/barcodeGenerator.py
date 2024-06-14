@@ -1,5 +1,4 @@
 from barcode import Code39
-from barcode.writer import SVGWriter
 import barcode
 
 
