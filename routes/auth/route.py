@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
-from pytz import timezone
-
 from utilities.config import GetConfig
 from utilities.database.func import GetDatabase
 from utilities.emailSender import SendEmail
@@ -13,12 +11,6 @@ router = APIRouter()
 config = GetConfig()
 
 database = GetDatabase(config["DATABASE"]["URI"])
-
-SMTP_SERVER = "smtp-mail.outlook.com"
-SMTP_PORT = 587
-
-NEULBOM_ADDRESS = config["EMAIL"]["ADDRESS"]
-NEULBOM_PASSWORD = config["EMAIL"]["PASSWORD"]
 
 
 @router.get("/send/{userId}/")
