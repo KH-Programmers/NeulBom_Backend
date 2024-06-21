@@ -273,8 +273,8 @@ async def Authentication(request: Request) -> Response:
     )
 
 
-@router.post("/changepwd")
-async def changePswd(request: Request) -> Response:
+@router.post("/changepw")
+async def ChangePassword(request: Request) -> Response:
     """
     It's changing password
     Parameters:
@@ -299,7 +299,7 @@ async def changePswd(request: Request) -> Response:
     salt = GenerateSalt(saltLength=64)
     hashedPassword = HashPassword(password=password, salt=salt)
     await database["user"].update_one(
-        {"email": email}, {"$set": {"password": hashedPassword}}
+        {"email": email}, {"$set": {"password": hashedPassword, "salt": salt}}
     )
 
     return JSONResponse(
