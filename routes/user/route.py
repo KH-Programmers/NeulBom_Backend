@@ -271,3 +271,38 @@ async def Authentication(request: Request) -> Response:
             },
         },
     )
+
+
+@router.post("/changepwd")
+async def changePswd(request: Request) -> Response:
+    """
+    It's changing password
+    Parameters:
+    - Access Token ( in header )
+
+    Returns:
+    - message: The message
+    - data: The data ( changePswd message )
+    """
+    token = request.headers.get("Authorization").replace("Token ", "")
+    findToken = await database["token"].find_one({"accessToken": token})
+    if not findToken:
+        return JSONResponse(
+            status_code=406, content={"message": "Token not found", "data": {}}
+        )
+
+    # 이메일 인증 후 이메일 데이터 받아오기
+    email = "tempEmail@kyungheeboy.hs.kr"
+    # 프로토에서 새 비밀번호 받아오기
+    password = "TMP"
+
+    salt = GenerateSalt(saltLength=64)
+    hashedPassword = HashPassword(password=password, salt=salt)
+    await database["user"].update_one(
+        {"email": email}, {"$set": {"password": hashedPassword}}
+    )
+
+    return JSONResponse(
+        status_code=200,
+        content={"message": "Successfully changed password!", "data": {}},
+    )
