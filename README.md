@@ -16,14 +16,29 @@
 │   ├── user
 │   │   ├── __init__.py
 │   │   ├── route.py
+│   ├── board
+│   │   ├── __init__.py
+│   │   ├── route.py
+│   ├── auth
+│   │   ├── __init__.py
+│   │   ├── route.py
+├── test
+│   ├── mealList
+│   ├── temp.py
+│   ├── testAuthCode.py
+│   ├── testMealConverter.py
+│   ├── testRunEmail.py
 ├── utilities
+│   ├── __init__.py
 │   ├── config.py
-│   ├── logger.py
+│   ├── emailSender.py
 │   ├── http.py
+│   ├── logger.py
+│   ├── mealJSONConverter.py
 │   ├── security.py
+│   ├── userGenerator.py
 │   ├── database
 │   │   ├── func.py
-│   │   ├── schema.py
 ├── config.ini
 ├── config.example.ini
 ├── requirements.txt
