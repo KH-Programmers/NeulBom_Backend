@@ -10,6 +10,8 @@ from pydantic import BaseModel
 from utilities.config import GetConfig
 from utilities.logger import DiscordLog
 from utilities.database.func import GetDatabase
+from utilities.userUtils import GetUserFromRequest
+from utilities.postUtils import *
 
 router = APIRouter()
 
@@ -234,6 +236,36 @@ async def Category(request: Request, category: str):
                     child["createdAt"], "%Y-%m-%d %H:%M:%S"
                 ).strftime("%Y-%m-%d")
 
+    return JSONResponse(posts, status_code=200)
+
+
+@router.get("/popular")
+async def GetAllPopular(request:Request):
+    user = await GetUserFromRequest(request)
+    if (type(user) is JSONResponse):
+        return user
+
+    posts = await GetCategory(uid=user["_id"])
+    if (type(posts) is JSONResponse):
+        return posts
+
+    posts = PickPopulars(posts)
+    SortPost(posts)
+    return JSONResponse(posts, status_code=200)
+
+
+@router.get("/{category}/popular")
+async def GetCategoryPopular(request:Request, category:str):
+    user = await GetUserFromRequest(request)
+    if (type(user) is JSONResponse):
+        return user
+
+    posts = await GetCategory(category, user["_id"], True)
+    if (type(posts) is JSONResponse):
+        return posts
+
+    posts = PickPopulars(posts)
+    SortPost(posts)
     return JSONResponse(posts, status_code=200)
 
 
