@@ -54,7 +54,7 @@ async def GetCategory(category:str="all", uid:Optional[str]=None, getchildren:bo
                 {"id": {"$in": list(map(lambda x: x["id"], board["children"]))}}
             ):
                 # Return val of this recursive call is must not be JSONResponse.
-                posts.extend(GetCategory(childBoard["_id"], uid=uid, getchildren=False))
+                posts.extend(await GetCategory(childBoard["_id"], uid=uid, getchildren=False))
 
     query = {"viewable":True} if category == "all" else {"viewable":True, "category":category}
 
