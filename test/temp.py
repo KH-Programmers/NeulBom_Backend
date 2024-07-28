@@ -1,3 +1,6 @@
+import json
+from collections import OrderedDict
+
 def ConvertJSON(mealObject: dict) -> dict:
     """
     !ISSUE!; 인코딩 상태에 문제 있을 수 있음, 한번에 하나씩만 처리함
@@ -8,29 +11,27 @@ def ConvertJSON(mealObject: dict) -> dict:
 
     if mealObject["MMEAL_SC_NM"] == "중식":
         convertedMealObject["isLunch"] = True
-    else:
+    else :
         convertedMealObject["isLunch"] = False
-
+    
     convertedMealObject["date"] = mealObject["MLSV_YMD"]
-
-    menus = mealObject["DDISH_NM"].split("<br/>")
+    
+    menus = mealObject["DDISH_NM"].split('<br/>')
 
     menuJSONList = list()
 
     for menu in menus:
-        menu = menu.replace("*", "")
+        menu = menu.replace('*', '')
         menuWithAllergy = dict()
-        menuWithAllergy["name"] = (
-            menu.split(" ", 1)[0].replace("1", "").replace("(완)", "")
-        )
+        menuWithAllergy["name"] = menu.split(' ', 1)[0].replace('1', '').replace('(완)', '')
 
         allergyList = list()
 
-        if menu.find("("):
-            menu = menu.replace("(", "")
-            menu = menu.replace(")", "")
-            menu = menu.split(" ")[1]
-            allergyList = menu.split(".")
+        if(menu.find('(')):
+            menu = menu.replace('(', '')
+            menu = menu.replace(')', '')
+            menu = menu.split(' ')[1]
+            allergyList = menu.split('.')
 
         i = 0
 
@@ -43,11 +44,10 @@ def ConvertJSON(mealObject: dict) -> dict:
 
         menuWithAllergy["allergies"] = allergyList
         menuJSONList.append(menuWithAllergy)
-
+    
     convertedMealObject["menu"] = menuJSONList
 
     return convertedMealObject
-
 
 def BatchConvertJSON(mealObject: list) -> list:
     """

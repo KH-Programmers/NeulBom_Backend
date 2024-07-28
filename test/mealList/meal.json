@@ -1,0 +1,2011 @@
+[
+	{
+		"isLunch": true,
+		"date": "20240603",
+		"menu": [
+			{
+				"name": "흰밥",
+				"allergies": []
+			},
+			{
+				"name": "스팸순두부찌개",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					13,
+					15,
+					16
+				]
+			},
+			{
+				"name": "새우호박볶음",
+				"allergies": [
+					9,
+					13
+				]
+			},
+			{
+				"name": "만두강정",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					12,
+					13,
+					16,
+					18
+				]
+			},
+			{
+				"name": "탄두리돼지훈제",
+				"allergies": [
+					2,
+					5,
+					6,
+					10,
+					12,
+					13
+				]
+			},
+			{
+				"name": "깍두기",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "요구르트",
+				"allergies": [
+					2
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240604",
+		"menu": [
+			{
+				"name": "현미밥",
+				"allergies": []
+			},
+			{
+				"name": "돼지LA갈비찜",
+				"allergies": [
+					5,
+					6,
+					10,
+					12,
+					13
+				]
+			},
+			{
+				"name": "연두부/양념장",
+				"allergies": [
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "오징어버터구이",
+				"allergies": [
+					2,
+					5,
+					13,
+					17
+				]
+			},
+			{
+				"name": "육개장",
+				"allergies": [
+					1,
+					5,
+					6,
+					16
+				]
+			},
+			{
+				"name": "깍두기",
+				"allergies": [
+					9
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240605",
+		"menu": [
+			{
+				"name": "참치캔비빔밥",
+				"allergies": [
+					5,
+					6
+				]
+			},
+			{
+				"name": "미소국",
+				"allergies": [
+					5,
+					6
+				]
+			},
+			{
+				"name": "새우버터구이",
+				"allergies": [
+					2,
+					9
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "제티",
+				"allergies": [
+					2
+				]
+			},
+			{
+				"name": "우유",
+				"allergies": [
+					2
+				]
+			},
+			{
+				"name": "고구마샐러드",
+				"allergies": [
+					2,
+					13
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240607",
+		"menu": [
+			{
+				"name": "흰밥",
+				"allergies": []
+			},
+			{
+				"name": "치즈코돈부르",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					12,
+					13,
+					16
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "워터젤리",
+				"allergies": []
+			},
+			{
+				"name": "롤케잌",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			},
+			{
+				"name": "귤맛살샐러드",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					8,
+					13,
+					18
+				]
+			},
+			{
+				"name": "크루통스프",
+				"allergies": [
+					2,
+					5,
+					6,
+					13,
+					16
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240610",
+		"menu": [
+			{
+				"name": "차조밥",
+				"allergies": []
+			},
+			{
+				"name": "뼈없는",
+				"allergies": []
+			},
+			{
+				"name": "어묵국",
+				"allergies": [
+					1,
+					5,
+					6
+				]
+			},
+			{
+				"name": "양송이메추리알조림",
+				"allergies": [
+					1,
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "콩나물무침",
+				"allergies": [
+					5
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "수리취복떡",
+				"allergies": []
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240611",
+		"menu": [
+			{
+				"name": "흰밥",
+				"allergies": []
+			},
+			{
+				"name": "양지탕",
+				"allergies": [
+					1,
+					5,
+					6,
+					13,
+					16
+				]
+			},
+			{
+				"name": "아삭고추된장무침",
+				"allergies": [
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "치킨직화스테이크/스위트칠리소스",
+				"allergies": [
+					5,
+					6,
+					12,
+					13,
+					15
+				]
+			},
+			{
+				"name": "깍두기",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "아이스크림",
+				"allergies": [
+					1,
+					2,
+					5
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240612",
+		"menu": [
+			{
+				"name": "치킨마요덮밥",
+				"allergies": [
+					1,
+					5,
+					6,
+					13,
+					15,
+					18
+				]
+			},
+			{
+				"name": "옥수수빵",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			},
+			{
+				"name": "유부장국",
+				"allergies": [
+					5
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "바나나우유",
+				"allergies": [
+					2
+				]
+			},
+			{
+				"name": "딸기샐러드",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240613",
+		"menu": [
+			{
+				"name": "현미밥",
+				"allergies": []
+			},
+			{
+				"name": "북어국",
+				"allergies": [
+					1,
+					5,
+					6
+				]
+			},
+			{
+				"name": "순살족발",
+				"allergies": [
+					5,
+					6,
+					10,
+					13
+				]
+			},
+			{
+				"name": "볼어묵볶음",
+				"allergies": [
+					1,
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "부추겉절이",
+				"allergies": [
+					13
+				]
+			},
+			{
+				"name": "파인애플",
+				"allergies": []
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240614",
+		"menu": [
+			{
+				"name": "중국식계란볶음밥",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					13,
+					15,
+					16,
+					18
+				]
+			},
+			{
+				"name": "자장라면",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					9,
+					10,
+					13,
+					15,
+					16
+				]
+			},
+			{
+				"name": "소떡소떡",
+				"allergies": [
+					1,
+					5,
+					6,
+					10,
+					12,
+					13,
+					15,
+					16
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "레몬에이드",
+				"allergies": []
+			},
+			{
+				"name": "블루베리샐러드",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					11
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240617",
+		"menu": [
+			{
+				"name": "흰밥/후리가케",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					9,
+					13,
+					16,
+					18
+				]
+			},
+			{
+				"name": "불닭볶음면",
+				"allergies": [
+					1,
+					5,
+					6,
+					13,
+					15
+				]
+			},
+			{
+				"name": "모듬묵무침",
+				"allergies": []
+			},
+			{
+				"name": "계란스크램블",
+				"allergies": [
+					1,
+					5
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "카프리썬",
+				"allergies": [
+					11,
+					12
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240618",
+		"menu": [
+			{
+				"name": "기장밥",
+				"allergies": []
+			},
+			{
+				"name": "건새우근대국",
+				"allergies": [
+					5,
+					6,
+					9
+				]
+			},
+			{
+				"name": "돈사태김치찜",
+				"allergies": [
+					9,
+					10
+				]
+			},
+			{
+				"name": "무생채",
+				"allergies": [
+					13
+				]
+			},
+			{
+				"name": "김구이",
+				"allergies": []
+			},
+			{
+				"name": "생선까스",
+				"allergies": [
+					1,
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "메론",
+				"allergies": []
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240619",
+		"menu": [
+			{
+				"name": "큐브스테이크덮밥",
+				"allergies": [
+					1,
+					5,
+					6,
+					10,
+					12,
+					13,
+					16
+				]
+			},
+			{
+				"name": "유부장국",
+				"allergies": [
+					5
+				]
+			},
+			{
+				"name": "맛볼감자튀김",
+				"allergies": [
+					5,
+					6
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "파인애플쥬스",
+				"allergies": [
+					13
+				]
+			},
+			{
+				"name": "망고샐러드",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240620",
+		"menu": [
+			{
+				"name": "현미밥",
+				"allergies": []
+			},
+			{
+				"name": "부대찌개/라면사리",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					9,
+					10,
+					13,
+					15,
+					16
+				]
+			},
+			{
+				"name": "크린베리멸치볶음",
+				"allergies": [
+					5,
+					13
+				]
+			},
+			{
+				"name": "새송이맛살볶음",
+				"allergies": [
+					1,
+					5,
+					6,
+					8
+				]
+			},
+			{
+				"name": "유린기",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					15
+				]
+			},
+			{
+				"name": "깍두기",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "아이스경단",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240621",
+		"menu": [
+			{
+				"name": "장조림버터비빔밥",
+				"allergies": [
+					1,
+					2,
+					16
+				]
+			},
+			{
+				"name": "냉모밀국수",
+				"allergies": [
+					3,
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "무말랭이진미채무침",
+				"allergies": [
+					5,
+					6,
+					13,
+					17
+				]
+			},
+			{
+				"name": "타코야끼",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "초코우유",
+				"allergies": [
+					2
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240624",
+		"menu": [
+			{
+				"name": "스파게티",
+				"allergies": [
+					1,
+					5,
+					6,
+					10,
+					12,
+					13
+				]
+			},
+			{
+				"name": "즉석피자",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					12,
+					13,
+					15,
+					16
+				]
+			},
+			{
+				"name": "오렌지주스",
+				"allergies": [
+					13
+				]
+			},
+			{
+				"name": "초코수제쿠키",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			},
+			{
+				"name": "단무지/피클",
+				"allergies": []
+			},
+			{
+				"name": "케이준샐러드",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					13,
+					15,
+					18
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240625",
+		"menu": [
+			{
+				"name": "흑미밥",
+				"allergies": []
+			},
+			{
+				"name": "만두국",
+				"allergies": [
+					1,
+					5,
+					6,
+					10,
+					15,
+					16,
+					18
+				]
+			},
+			{
+				"name": "견과류콩조림",
+				"allergies": [
+					4,
+					5,
+					6,
+					13,
+					14
+				]
+			},
+			{
+				"name": "피망감자채볶음",
+				"allergies": [
+					5,
+					10
+				]
+			},
+			{
+				"name": "너비아니구이",
+				"allergies": [
+					5,
+					6,
+					10,
+					15,
+					16,
+					18
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "인포켓치즈",
+				"allergies": [
+					2
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240626",
+		"menu": [
+			{
+				"name": "김가루밥",
+				"allergies": [
+					1,
+					5,
+					6,
+					9,
+					13,
+					16,
+					18
+				]
+			},
+			{
+				"name": "국물떡볶이",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					13,
+					15,
+					16,
+					18
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "이온음료",
+				"allergies": []
+			},
+			{
+				"name": "바나나",
+				"allergies": []
+			},
+			{
+				"name": "과일젤리샐러드",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240627",
+		"menu": [
+			{
+				"name": "보리밥",
+				"allergies": []
+			},
+			{
+				"name": "배추국",
+				"allergies": [
+					5,
+					6
+				]
+			},
+			{
+				"name": "도토리묵무침",
+				"allergies": [
+					5,
+					6,
+					9,
+					13
+				]
+			},
+			{
+				"name": "상추겉절이",
+				"allergies": [
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "삼겹살새송이구이",
+				"allergies": [
+					5,
+					6,
+					10
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "비피더스",
+				"allergies": [
+					2
+				]
+			}
+		]
+	},
+	{
+		"isLunch": true,
+		"date": "20240628",
+		"menu": [
+			{
+				"name": "한우파프리카볶음밥",
+				"allergies": [
+					5,
+					13,
+					16
+				]
+			},
+			{
+				"name": "비빔국수",
+				"allergies": [
+					5,
+					6
+				]
+			},
+			{
+				"name": "오징어초무침",
+				"allergies": [
+					5,
+					6,
+					13,
+					17
+				]
+			},
+			{
+				"name": "치즈스틱",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "두유",
+				"allergies": [
+					5
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240603",
+		"menu": [
+			{
+				"name": "쌀밥",
+				"allergies": []
+			},
+			{
+				"name": "북어국",
+				"allergies": [
+					1,
+					5,
+					6
+				]
+			},
+			{
+				"name": "두부조림",
+				"allergies": [
+					5,
+					6,
+					10,
+					12,
+					13,
+					18
+				]
+			},
+			{
+				"name": "콩나물불고기",
+				"allergies": [
+					5,
+					6,
+					10,
+					13
+				]
+			},
+			{
+				"name": "볼어묵볶음",
+				"allergies": [
+					1,
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "망고쥬스",
+				"allergies": [
+					13
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240604",
+		"menu": [
+			{
+				"name": "치즈오븐스파게티",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					12,
+					13,
+					15,
+					16
+				]
+			},
+			{
+				"name": "수제마늘빵",
+				"allergies": [
+					2,
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "바나나",
+				"allergies": []
+			},
+			{
+				"name": "카프리썬",
+				"allergies": [
+					11,
+					12
+				]
+			},
+			{
+				"name": "피클",
+				"allergies": []
+			},
+			{
+				"name": "콘샐러드",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					8,
+					13
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240605",
+		"menu": [
+			{
+				"name": "쌀밥",
+				"allergies": []
+			},
+			{
+				"name": "비빔막국수",
+				"allergies": [
+					3,
+					6
+				]
+			},
+			{
+				"name": "조랑떡새우조림",
+				"allergies": [
+					9,
+					13
+				]
+			},
+			{
+				"name": "보쌈",
+				"allergies": [
+					5,
+					6,
+					10
+				]
+			},
+			{
+				"name": "미나리무생채",
+				"allergies": [
+					13
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "식혜",
+				"allergies": []
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240607",
+		"menu": [
+			{
+				"name": "베이컨건파래볶음밥",
+				"allergies": [
+					5,
+					10,
+					13
+				]
+			},
+			{
+				"name": "김치국수",
+				"allergies": [
+					5,
+					6,
+					9
+				]
+			},
+			{
+				"name": "감자샐러드",
+				"allergies": [
+					1,
+					5,
+					13
+				]
+			},
+			{
+				"name": "닭꼬치",
+				"allergies": [
+					5,
+					6,
+					15
+				]
+			},
+			{
+				"name": "깍두기",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "초코우유",
+				"allergies": [
+					2
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240610",
+		"menu": [
+			{
+				"name": "미소국",
+				"allergies": [
+					5,
+					6
+				]
+			},
+			{
+				"name": "치커리유자샐러드",
+				"allergies": [
+					13
+				]
+			},
+			{
+				"name": "로제치즈떡볶이",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					12,
+					13,
+					15,
+					16
+				]
+			},
+			{
+				"name": "불고기덮밥",
+				"allergies": [
+					16,
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "포도쥬스",
+				"allergies": [
+					13
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240611",
+		"menu": [
+			{
+				"name": "쌀밥",
+				"allergies": []
+			},
+			{
+				"name": "고추장찌개/수제비",
+				"allergies": [
+					5,
+					6,
+					10
+				]
+			},
+			{
+				"name": "돈갈비찜",
+				"allergies": [
+					5,
+					6,
+					10,
+					13
+				]
+			},
+			{
+				"name": "열무무침",
+				"allergies": []
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "초코파이",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240612",
+		"menu": [
+			{
+				"name": "쌀밥",
+				"allergies": []
+			},
+			{
+				"name": "가쓰오장국",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					9
+				]
+			},
+			{
+				"name": "새알심떡조림",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					13,
+					16
+				]
+			},
+			{
+				"name": "진미채무침",
+				"allergies": [
+					5,
+					6,
+					13,
+					17
+				]
+			},
+			{
+				"name": "돈까스/브라운소스",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					12,
+					13,
+					16
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "아이스튜브",
+				"allergies": [
+					2
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240613",
+		"menu": [
+			{
+				"name": "쌀밥",
+				"allergies": []
+			},
+			{
+				"name": "순대국",
+				"allergies": [
+					2,
+					5,
+					6,
+					10,
+					13,
+					16
+				]
+			},
+			{
+				"name": "도토리묵무침",
+				"allergies": [
+					5,
+					6,
+					9,
+					13
+				]
+			},
+			{
+				"name": "파닭",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					12,
+					13,
+					15,
+					18
+				]
+			},
+			{
+				"name": "깍두기",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "아이스튜브",
+				"allergies": [
+					2
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240614",
+		"menu": [
+			{
+				"name": "계란파국",
+				"allergies": [
+					1
+				]
+			},
+			{
+				"name": "탕평채",
+				"allergies": [
+					1,
+					5,
+					6
+				]
+			},
+			{
+				"name": "무교동낙지비빔밥",
+				"allergies": [
+					5,
+					6,
+					17
+				]
+			},
+			{
+				"name": "핫도그",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					12,
+					16
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "헬로엔요",
+				"allergies": [
+					2
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240617",
+		"menu": [
+			{
+				"name": "쌀밥",
+				"allergies": []
+			},
+			{
+				"name": "참치김치찌개",
+				"allergies": [
+					5,
+					9
+				]
+			},
+			{
+				"name": "새우브로컬리복음",
+				"allergies": [
+					5,
+					9,
+					13
+				]
+			},
+			{
+				"name": "김자반",
+				"allergies": [
+					5
+				]
+			},
+			{
+				"name": "오징어튀김",
+				"allergies": [
+					1,
+					5,
+					6,
+					17
+				]
+			},
+			{
+				"name": "맥적구이",
+				"allergies": [
+					5,
+					6,
+					10
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240618",
+		"menu": [
+			{
+				"name": "쌀밥",
+				"allergies": []
+			},
+			{
+				"name": "어묵국",
+				"allergies": [
+					1,
+					5,
+					6
+				]
+			},
+			{
+				"name": "안동찜닭",
+				"allergies": [
+					5,
+					6,
+					13,
+					15
+				]
+			},
+			{
+				"name": "비빔만두",
+				"allergies": [
+					1,
+					5,
+					6,
+					10,
+					16,
+					18
+				]
+			},
+			{
+				"name": "상추겉절이",
+				"allergies": [
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240619",
+		"menu": [
+			{
+				"name": "가츠동",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					9,
+					10,
+					13
+				]
+			},
+			{
+				"name": "떡꼬치",
+				"allergies": [
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "파인애플쥬스",
+				"allergies": [
+					13
+				]
+			},
+			{
+				"name": "브라우니초코케이크",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			},
+			{
+				"name": "황도샐러드",
+				"allergies": [
+					5,
+					6,
+					11
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240620",
+		"menu": [
+			{
+				"name": "쌀밥",
+				"allergies": []
+			},
+			{
+				"name": "육개장",
+				"allergies": [
+					1,
+					13,
+					16
+				]
+			},
+			{
+				"name": "두부강정",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					12,
+					13,
+					15,
+					16,
+					18
+				]
+			},
+			{
+				"name": "훈제오리구이",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			},
+			{
+				"name": "깍두기",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "오이부추무침",
+				"allergies": []
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240621",
+		"menu": [
+			{
+				"name": "닭살마파두부덮밥",
+				"allergies": [
+					5,
+					6,
+					12,
+					13,
+					15,
+					18
+				]
+			},
+			{
+				"name": "유부국",
+				"allergies": [
+					5
+				]
+			},
+			{
+				"name": "치커리사과무침",
+				"allergies": [
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "꿔바로우탕수육",
+				"allergies": [
+					1,
+					5,
+					6,
+					10,
+					11,
+					13
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "사과쥬스",
+				"allergies": [
+					13
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240624",
+		"menu": [
+			{
+				"name": "쌀밥",
+				"allergies": []
+			},
+			{
+				"name": "돼지고기국밥",
+				"allergies": [
+					2,
+					5,
+					6,
+					10
+				]
+			},
+			{
+				"name": "아삭고추된장무침",
+				"allergies": [
+					5,
+					6,
+					13
+				]
+			},
+			{
+				"name": "비엔나조림",
+				"allergies": [
+					2,
+					5,
+					6,
+					10,
+					12,
+					15,
+					16
+				]
+			},
+			{
+				"name": "깍두기",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "파인애플",
+				"allergies": []
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240625",
+		"menu": [
+			{
+				"name": "쌀밥",
+				"allergies": []
+			},
+			{
+				"name": "팽이버섯장국",
+				"allergies": []
+			},
+			{
+				"name": "오이양파무침",
+				"allergies": [
+					13
+				]
+			},
+			{
+				"name": "돈육짜장볶음",
+				"allergies": [
+					2,
+					5,
+					6,
+					10,
+					13
+				]
+			},
+			{
+				"name": "치즈볼",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "감귤쥬스",
+				"allergies": [
+					13
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240626",
+		"menu": [
+			{
+				"name": "전주식비빔밥",
+				"allergies": [
+					1,
+					5,
+					6,
+					10
+				]
+			},
+			{
+				"name": "두부미소국",
+				"allergies": [
+					5,
+					6
+				]
+			},
+			{
+				"name": "회오리감자",
+				"allergies": [
+					5,
+					6
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "돌핀젤리스무디",
+				"allergies": []
+			},
+			{
+				"name": "열대과일샐러드",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			}
+		]
+	},
+	{
+		"isLunch": false,
+		"date": "20240627",
+		"menu": [
+			{
+				"name": "돈코츠라멘",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					10,
+					13,
+					15,
+					16
+				]
+			},
+			{
+				"name": "순살치킨강정",
+				"allergies": [
+					1,
+					2,
+					5,
+					6,
+					12,
+					13,
+					15
+				]
+			},
+			{
+				"name": "배추김치",
+				"allergies": [
+					9
+				]
+			},
+			{
+				"name": "아이스크림",
+				"allergies": [
+					1,
+					2,
+					5
+				]
+			},
+			{
+				"name": "생크림오믈렛",
+				"allergies": [
+					1,
+					2,
+					5,
+					6
+				]
+			}
+		]
+	}
+]

@@ -8,5 +8,4 @@ scrypt
 pytz
 pick
 pyjwt
-python-barcode
-pillow
+aiosmtplib

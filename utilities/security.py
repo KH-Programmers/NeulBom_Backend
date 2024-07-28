@@ -2,6 +2,9 @@ import scrypt
 import random
 import string
 
+from utilities.config import GetConfig
+from utilities.database.func import GetDatabase
+
 
 def GenerateSalt(saltLength: int = 64) -> str:
     """
@@ -26,6 +29,7 @@ def HashPassword(password: str, salt: str) -> bytes:
     """
     return scrypt.hash(password, salt)
 
+
 async def GenerateAuthCode() -> str:
     """
     Generates a random 5 bytes Authorize Code
@@ -33,14 +37,13 @@ async def GenerateAuthCode() -> str:
     :return: Authorize Code
     """
 
+    config = GetConfig()
     database = GetDatabase(config["DATABASE"]["URI"])
 
     authCode = str()
     while True:
-        authCode = "".join(
-            random.choice(string.ascii_uppercase)
-            for _ in range(5)
-        )
-        if await database["pending"].find_one({"authCode" : authCode}) is None: break
+        authCode = "".join(random.choice(string.ascii_uppercase) for _ in range(5))
+        if await database["pending"].find_one({"authCode": authCode}) is None:
+            break
 
     return authCode
